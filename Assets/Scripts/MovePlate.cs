@@ -9,13 +9,14 @@ public class MovePlate : MonoBehaviour
 
     //The Chesspiece that was tapped to create this MovePlate
     GameObject reference = null;
-
     //Location on the board
     int matrixX;
     int matrixY;
 
     //false: movement, true: attacking
     public bool attack = false;
+    // false: no mering possible, true: merging
+    public bool merge = false;
 
     public void Start()
     {
@@ -23,6 +24,12 @@ public class MovePlate : MonoBehaviour
         {
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+        }
+        
+        if (merge)
+        {
+            //Set to green
+            gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
         }
     }
 
@@ -39,25 +46,56 @@ public class MovePlate : MonoBehaviour
             if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
             Destroy(cp);
+            OnMouseUpReference(reference);
         }
+        else if (merge)
+        {
+            GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+            Destroy(cp);
+            //Check with asset we need 
+            if (cp.name.Contains("white_knight")  | cp.name.Contains("white_pawn"))
+            {
+                GameObject newReference = controller.GetComponent<Game>().Create("white_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+                OnMouseUpReference(newReference);
+            }
+            if (cp.name.Contains("black_knight") | cp.name.Contains("black_pawn")) 
+            {
+                GameObject newReference = controller.GetComponent<Game>().Create("black_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+                OnMouseUpReference(newReference);
+            }
+            
+            //@Magda Create the merge figures 
+            
 
-        //Set the Chesspiece's original location to be empty
-        controller.GetComponent<Game>().SetPositionEmpty(reference.GetComponent<Chessman>().GetXBoard(), 
-            reference.GetComponent<Chessman>().GetYBoard());
+        }
+        else 
+        {
+            OnMouseUpReference(reference);
+        }
+       
+    }
 
-        //Move reference chess piece to this position
-        reference.GetComponent<Chessman>().SetXBoard(matrixX);
-        reference.GetComponent<Chessman>().SetYBoard(matrixY);
-        reference.GetComponent<Chessman>().SetCoords();
+    private void OnMouseUpReference(GameObject references)
+    {
+        controller.GetComponent<Game>().SetPositionEmpty(references.GetComponent<Chessman>().GetXBoard(),
+                  references.GetComponent<Chessman>().GetYBoard());
 
-        //Update the matrix
-        controller.GetComponent<Game>().SetPosition(reference);
+         //Move reference chess piece to this position
+         references.GetComponent<Chessman>().SetXBoard(matrixX);
+         references.GetComponent<Chessman>().SetYBoard(matrixY);
+         references.GetComponent<Chessman>().SetCoords();
 
-        //Switch Current Player
-        controller.GetComponent<Game>().NextTurn();
+         //Update the matrix
+         controller.GetComponent<Game>().SetPosition(references);
 
-        //Destroy the move plates including self
-        reference.GetComponent<Chessman>().DestroyMovePlates();
+         //Switch Current Player
+         controller.GetComponent<Game>().NextTurn();
+
+         //Destroy the move plates including self
+         references.GetComponent<Chessman>().DestroyMovePlates();
+
     }
 
     public void SetCoords(int x, int y)
