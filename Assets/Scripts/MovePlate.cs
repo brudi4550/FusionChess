@@ -91,9 +91,27 @@ public class MovePlate : MonoBehaviour
                
                 OnMouseUpReference(newReference);
             }
-            
-            //@Magda Create the merge figures 
-            
+
+            //RAWN
+            if ((cp.name == "white_pawn" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_pawn" && cp.name == "white_rook"))
+            {
+                Destroy(cp);
+                //Debug.Log(cp.name);
+                //Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_rawn", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_pawn" && reference.GetComponent<Chessman>().name == "black_rook") | (reference.GetComponent<Chessman>().name == "black_pawn" && cp.name == "black_rook"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_rawn", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+
 
         }
         else 
