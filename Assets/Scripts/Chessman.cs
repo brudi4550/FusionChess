@@ -17,8 +17,8 @@ public class Chessman : MonoBehaviour
     private string player;
 
     //References to all the possible Sprites that this Chesspiece could be
-    public Sprite black_queen, black_knight, black_bishop, black_king, black_rook, black_pawn, black_pnight, black_knishop, black_rawn;
-    public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn, white_pnight, white_knishop, white_rawn;
+    public Sprite black_queen, black_knight, black_bishop, black_king, black_rook, black_pawn, black_pnight, black_knishop, black_rawn, black_knook;
+    public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn, white_pnight, white_knishop, white_rawn, white_knook;
 
     public void Activate()
     {
@@ -39,7 +39,8 @@ public class Chessman : MonoBehaviour
             case "black_pawn": this.GetComponent<SpriteRenderer>().sprite = black_pawn; player = "black"; break;
             case "black_pnight": this.GetComponent<SpriteRenderer>().sprite = black_pnight; player = "black"; break;
             case "black_knishop": this.GetComponent<SpriteRenderer>().sprite = black_knishop; player = "black"; break;
-            case "black_rawn": this.GetComponent<SpriteRenderer>().sprite = black_rawn; player = "black"; break; 
+            case "black_rawn": this.GetComponent<SpriteRenderer>().sprite = black_rawn; player = "black"; break;
+            case "black_knook": this.GetComponent<SpriteRenderer>().sprite = black_knook; player = "black"; break;
             case "white_queen": this.GetComponent<SpriteRenderer>().sprite = white_queen; player = "white"; break;
             case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; break;
             case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
@@ -48,7 +49,8 @@ public class Chessman : MonoBehaviour
             case "white_pawn": this.GetComponent<SpriteRenderer>().sprite = white_pawn; player = "white"; break;
             case "white_pnight": this.GetComponent<SpriteRenderer>().sprite = white_pnight; player = "white"; break;
             case "white_knishop": this.GetComponent<SpriteRenderer>().sprite = white_knishop; player = "white"; break;
-            case "white_rawn": this.GetComponent<SpriteRenderer>().sprite = white_rawn; player = "white"; break; 
+            case "white_rawn": this.GetComponent<SpriteRenderer>().sprite = white_rawn; player = "white"; break;
+            case "white_knook": this.GetComponent<SpriteRenderer>().sprite = white_knook; player = "white"; break;
 
         }
     }
@@ -186,7 +188,15 @@ public class Chessman : MonoBehaviour
                 LineMovePlate(0, 1);
                 LineMovePlate(-1, 0);
                 LineMovePlate(0, -1);
-                break; 
+                break;
+            case "black_knook":
+            case "white_knook":
+                LineMovePlate(1, 0);
+                LineMovePlate(0, 1);
+                LineMovePlate(-1, 0);
+                LineMovePlate(0, -1);
+                LMovePlate();
+                break;
         }
     }
 
@@ -210,8 +220,11 @@ public class Chessman : MonoBehaviour
         }
         if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player == player && this.name != "white_queen"  && this.name != "black_queen" && 
             this.name != "white_rawn" && this.name != "black_rawn" && this.name != "white_pnight" && this.name != "black_pnight" &&
-            this.name != "white_knishop" && this.name != "black_knishop")
+            this.name != "white_knishop" && this.name != "black_knishop" &&
+            this.name != "white_knook" && this.name != "black_knook")
         {
+            Debug.Log(this.name);
+            Debug.Log("Name");
             MovePlateMergeSpawn(x, y);
         }
     }
@@ -258,7 +271,8 @@ public class Chessman : MonoBehaviour
             } 
             else if (cp.GetComponent<Chessman>().player == player && cp != null && this.name != "white_king" && this.name != "black_king" && 
                 this.name != "white_rawn" && this.name != "black_rawn" && this.name != "white_pnight" && this.name != "black_pnight" && 
-                this.name != "white_knishop" && this.name != "black_knishop")
+                this.name != "white_knishop" && this.name != "black_knishop" &&
+                this.name != "white_knook" && this.name != "black_knook")
             {
                 MovePlateMergeSpawn(x, y);
             }

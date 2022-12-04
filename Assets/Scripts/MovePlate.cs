@@ -112,6 +112,25 @@ public class MovePlate : MonoBehaviour
                 OnMouseUpReference(newReference);
             }
 
+            //KNOOK
+            if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_rook"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_knook", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_rook") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_rook"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_knook", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
 
         }
         else 
