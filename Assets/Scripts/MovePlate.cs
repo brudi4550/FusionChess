@@ -131,6 +131,28 @@ public class MovePlate : MonoBehaviour
 
                 OnMouseUpReference(newReference);
             }
+            //RISHOP
+            if ((cp.name == "white_rook" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_rook" && cp.name == "white_bishop"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_rishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_rook" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_rook" && cp.name == "black_bishop"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_rishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            //KNEEN
+            //PISHOP
+
 
         }
         else 
