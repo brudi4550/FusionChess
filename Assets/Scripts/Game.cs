@@ -1,8 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Helpers;
+using System;
 
 public class Game : MonoBehaviour
 {
@@ -18,6 +20,8 @@ public class Game : MonoBehaviour
 
     //current turn
     private string currentPlayer = "white";
+
+    private List<Move> moves = new List<Move>();
 
     //Game Ending
     private bool gameOver = false;
@@ -58,20 +62,9 @@ public class Game : MonoBehaviour
         return obj;
     }
 
-    public GameObject Create(string name)
-    {
-        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
-        Chessman cm = obj.GetComponent<Chessman>(); //We have access to the GameObject, we need the script
-        cm.name = name; //This is a built in variable that Unity has, so we did not have to declare it before
-        cm.Activate(); //It has everything set up so it can now Activate()
-        return obj;
-    }
-
-
     public void SetPosition(GameObject obj)
     {
         Chessman cm = obj.GetComponent<Chessman>();
-
         //Overwrites either empty space or whatever was there
         positions[cm.GetXBoard(), cm.GetYBoard()] = obj;
     }
@@ -83,7 +76,11 @@ public class Game : MonoBehaviour
 
     public GameObject GetPosition(int x, int y)
     {
-        return positions[x, y];
+        try {
+            return positions[x, y];
+        } catch (IndexOutOfRangeException e) {
+            return null;
+        }
     }
 
     public bool PositionOnBoard(int x, int y)
@@ -102,7 +99,14 @@ public class Game : MonoBehaviour
         return gameOver;
     }
 
-    
+    public void AddMove(Move m)
+    {
+        moves.Add(m);
+    }
+
+    public Move GetLastMove() {
+        return moves.DefaultIfEmpty(null).Last();
+    }
 
     public void NextTurn()
     {
@@ -126,7 +130,7 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Game"); //Restarts the game by loading the scene over again
         }
     }
-    
+
     public void Winner(string playerWinner)
     {
         gameOver = true;
