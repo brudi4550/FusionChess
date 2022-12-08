@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Helpers;
 
 public class MovePlate : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class MovePlate : MonoBehaviour
     // false: no mering possible, true: merging
     public bool merge = false;
 
+    public bool enPassant = false;
+
     public void Start()
     {
         if (attack)
@@ -25,7 +28,7 @@ public class MovePlate : MonoBehaviour
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
         }
-        
+
         if (merge)
         {
             //Set to green
@@ -40,7 +43,16 @@ public class MovePlate : MonoBehaviour
         //Destroy the victim Chesspiece
         if (attack)
         {
-            GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+            GameObject cp;
+            if (enPassant)
+            {
+                int factor = controller.GetComponent<Game>().GetCurrentPlayer() == "white" ? -1 : 1;
+                cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY + factor);
+            }
+            else
+            {
+                cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+            }
 
             if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
             if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
@@ -51,25 +63,25 @@ public class MovePlate : MonoBehaviour
         else if (merge)
         {
             GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
-            
+
             //Check with asset we need 
             //PNIGHT
-            if ((cp.name == "white_knight"  && reference.GetComponent<Chessman>().name == "white_pawn") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_pawn"))
+            if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_pawn") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_pawn"))
             {
                 Destroy(cp);
                 //Debug.Log(cp.name);
                 //Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
-          
+
                 OnMouseUpReference(newReference);
             }
-            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_pawn") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_pawn")) 
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_pawn") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_pawn"))
             {
                 Destroy(cp);
                 GameObject newReference = controller.GetComponent<Game>().Create("black_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
-                
+
                 OnMouseUpReference(newReference);
             }
             //KNISHOP
@@ -80,15 +92,15 @@ public class MovePlate : MonoBehaviour
                 Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_knishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
-               
+
                 OnMouseUpReference(newReference);
             }
-            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_bishop")) 
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_bishop"))
             {
                 Destroy(cp);
                 GameObject newReference = controller.GetComponent<Game>().Create("black_knishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
-               
+
                 OnMouseUpReference(newReference);
             }
 
@@ -155,31 +167,45 @@ public class MovePlate : MonoBehaviour
 
 
         }
-        else 
+        else
         {
             OnMouseUpReference(reference);
         }
-       
+
     }
 
     private void OnMouseUpReference(GameObject references)
     {
-        controller.GetComponent<Game>().SetPositionEmpty(references.GetComponent<Chessman>().GetXBoard(),
-                  references.GetComponent<Chessman>().GetYBoard());
+        Game game = controller.GetComponent<Game>();
+        Chessman piece = references.GetComponent<Chessman>();
+        if (enPassant)
+        {
+            int factor = game.GetCurrentPlayer() == "white" ? -1 : 1;
+            game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard() + factor);
+        }
+        else
+        {
 
-         //Move reference chess piece to this position
-         references.GetComponent<Chessman>().SetXBoard(matrixX);
-         references.GetComponent<Chessman>().SetYBoard(matrixY);
-         references.GetComponent<Chessman>().SetCoords();
+            game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
+        }
 
-         //Update the matrix
-         controller.GetComponent<Game>().SetPosition(references);
+        //Add move to movelist, necessary for checking for en passant
+        Move m = new Move(references, piece.GetXBoard(), piece.GetYBoard(), matrixX, matrixY);
+        game.AddMove(m);
 
-         //Switch Current Player
-         controller.GetComponent<Game>().NextTurn();
+        //Move reference chess piece to this position
+        references.GetComponent<Chessman>().SetXBoard(matrixX);
+        references.GetComponent<Chessman>().SetYBoard(matrixY);
+        references.GetComponent<Chessman>().SetCoords();
 
-         //Destroy the move plates including self
-         references.GetComponent<Chessman>().DestroyMovePlates();
+        //Update the matrix
+        game.SetPosition(references);
+
+        //Switch Current Player
+        game.NextTurn();
+
+        //Destroy the move plates including self
+        references.GetComponent<Chessman>().DestroyMovePlates();
 
     }
 
