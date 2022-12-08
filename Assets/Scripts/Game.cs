@@ -31,13 +31,13 @@ public class Game : MonoBehaviour
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
             Create("white_pawn", 0, 1), Create("white_pawn", 1, 1), Create("white_pawn", 2, 1),
             Create("white_pawn", 3, 1), Create("white_pawn", 4, 1), Create("white_pawn", 5, 1),
-            Create("white_pawn", 6, 1), Create("white_pawn", 7, 1) };
+            Create("white_pawn", 6, 1), Create("white_pawn", 7, 1)};
         playerBlack = new GameObject[] { Create("black_rook", 0, 7), Create("black_knight",1,7),
             Create("black_bishop",2,7), Create("black_queen",3,7), Create("black_king",4,7),
             Create("black_bishop",5,7), Create("black_knight",6,7), Create("black_rook",7,7),
             Create("black_pawn", 0, 6), Create("black_pawn", 1, 6), Create("black_pawn", 2, 6),
             Create("black_pawn", 3, 6), Create("black_pawn", 4, 6), Create("black_pawn", 5, 6),
-            Create("black_pawn", 6, 6), Create("black_pawn", 7, 6) };
+            Create("black_pawn", 6, 6), Create("black_pawn", 7, 6)};
 
         //Set all piece positions on the positions board
         for (int i = 0; i < playerBlack.Length; i++)
@@ -57,6 +57,16 @@ public class Game : MonoBehaviour
         cm.Activate(); //It has everything set up so it can now Activate()
         return obj;
     }
+
+    public GameObject Create(string name)
+    {
+        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
+        Chessman cm = obj.GetComponent<Chessman>(); //We have access to the GameObject, we need the script
+        cm.name = name; //This is a built in variable that Unity has, so we did not have to declare it before
+        cm.Activate(); //It has everything set up so it can now Activate()
+        return obj;
+    }
+
 
     public void SetPosition(GameObject obj)
     {
@@ -91,6 +101,8 @@ public class Game : MonoBehaviour
     {
         return gameOver;
     }
+
+    
 
     public void NextTurn()
     {

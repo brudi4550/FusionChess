@@ -9,13 +9,14 @@ public class MovePlate : MonoBehaviour
 
     //The Chesspiece that was tapped to create this MovePlate
     GameObject reference = null;
-
     //Location on the board
     int matrixX;
     int matrixY;
 
     //false: movement, true: attacking
     public bool attack = false;
+    // false: no mering possible, true: merging
+    public bool merge = false;
 
     public void Start()
     {
@@ -23,6 +24,12 @@ public class MovePlate : MonoBehaviour
         {
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+        }
+        
+        if (merge)
+        {
+            //Set to green
+            gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
         }
     }
 
@@ -39,25 +46,141 @@ public class MovePlate : MonoBehaviour
             if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
             Destroy(cp);
+            OnMouseUpReference(reference);
         }
+        else if (merge)
+        {
+            GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+            
+            //Check with asset we need 
+            //PNIGHT
+            if ((cp.name == "white_knight"  && reference.GetComponent<Chessman>().name == "white_pawn") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_pawn"))
+            {
+                Destroy(cp);
+                //Debug.Log(cp.name);
+                //Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+          
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_pawn") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_pawn")) 
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+                
+                OnMouseUpReference(newReference);
+            }
+            //KNISHOP
+            if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_bishop"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_knishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+               
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_bishop")) 
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_knishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+               
+                OnMouseUpReference(newReference);
+            }
 
-        //Set the Chesspiece's original location to be empty
-        controller.GetComponent<Game>().SetPositionEmpty(reference.GetComponent<Chessman>().GetXBoard(), 
-            reference.GetComponent<Chessman>().GetYBoard());
+            //RAWN
+            if ((cp.name == "white_pawn" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_pawn" && cp.name == "white_rook"))
+            {
+                Destroy(cp);
+                //Debug.Log(cp.name);
+                //Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_rawn", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
 
-        //Move reference chess piece to this position
-        reference.GetComponent<Chessman>().SetXBoard(matrixX);
-        reference.GetComponent<Chessman>().SetYBoard(matrixY);
-        reference.GetComponent<Chessman>().SetCoords();
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_pawn" && reference.GetComponent<Chessman>().name == "black_rook") | (reference.GetComponent<Chessman>().name == "black_pawn" && cp.name == "black_rook"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_rawn", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
 
-        //Update the matrix
-        controller.GetComponent<Game>().SetPosition(reference);
+                OnMouseUpReference(newReference);
+            }
 
-        //Switch Current Player
-        controller.GetComponent<Game>().NextTurn();
+            //KNOOK
+            if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_rook"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_knook", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
 
-        //Destroy the move plates including self
-        reference.GetComponent<Chessman>().DestroyMovePlates();
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_knight" && reference.GetComponent<Chessman>().name == "black_rook") | (reference.GetComponent<Chessman>().name == "black_knight" && cp.name == "black_rook"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_knook", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            //RISHOP
+            if ((cp.name == "white_rook" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_rook" && cp.name == "white_bishop"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_rishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_rook" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_rook" && cp.name == "black_bishop"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_rishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            //KNEEN
+            //PISHOP
+
+
+        }
+        else 
+        {
+            OnMouseUpReference(reference);
+        }
+       
+    }
+
+    private void OnMouseUpReference(GameObject references)
+    {
+        controller.GetComponent<Game>().SetPositionEmpty(references.GetComponent<Chessman>().GetXBoard(),
+                  references.GetComponent<Chessman>().GetYBoard());
+
+         //Move reference chess piece to this position
+         references.GetComponent<Chessman>().SetXBoard(matrixX);
+         references.GetComponent<Chessman>().SetYBoard(matrixY);
+         references.GetComponent<Chessman>().SetCoords();
+
+         //Update the matrix
+         controller.GetComponent<Game>().SetPosition(references);
+
+         //Switch Current Player
+         controller.GetComponent<Game>().NextTurn();
+
+         //Destroy the move plates including self
+         references.GetComponent<Chessman>().DestroyMovePlates();
+
     }
 
     public void SetCoords(int x, int y)
