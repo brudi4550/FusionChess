@@ -83,7 +83,7 @@ SpriteRenderer:
   m_Size: {x: 0.2, y: 0.2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &-490040274308096976
@@ -112,6 +112,8 @@ MonoBehaviour:
   black_rawn: {fileID: 21300000, guid: 06e29a4563df4b24b84031bc2fcd0fbc, type: 3}
   black_knook: {fileID: 21300000, guid: 49abc04f18056cd49b5c131810ee4356, type: 3}
   black_rishop: {fileID: 21300000, guid: 483da59f8333d9541af511c07ba1028b, type: 3}
+  black_kneen: {fileID: 21300000, guid: 89b46147df7f65c43ad527181e52d949, type: 3}
+  black_pishop: {fileID: 21300000, guid: d980bf1d565de3f49a6a44836b392532, type: 3}
   white_queen: {fileID: 21300000, guid: 3fd0f4ed7de0b654d8a8eef030fefe31, type: 3}
   white_knight: {fileID: 21300000, guid: 36475b869cbd7c64898d6f9a2b7d7b39, type: 3}
   white_bishop: {fileID: 21300000, guid: b34bcc6f5f99fe246aa11c84e788afa6, type: 3}
@@ -123,6 +125,8 @@ MonoBehaviour:
   white_rawn: {fileID: 21300000, guid: d4609ee49315d634385c15c83aae4e91, type: 3}
   white_knook: {fileID: 21300000, guid: 032df1443454f2b4fbbe7a3042ff945b, type: 3}
   white_rishop: {fileID: 21300000, guid: f05de1e61ff8c0448a2de4fddbaff78a, type: 3}
+  white_kneen: {fileID: 21300000, guid: c997d4f89492cd14295a99d361447e17, type: 3}
+  white_pishop: {fileID: 21300000, guid: 24ec1d72bc0158645a98a2ea854b7ac5, type: 3}
 --- !u!61 &7068999908475216718
 BoxCollider2D:
   m_ObjectHideFlags: 0
