@@ -4,10 +4,20 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public class Counter
+{
+    public static int roundCounter = 0;
+    public static int winCounterPlayerA = 0; 
+    public static int winCounterPlayerB = 0;
+}
+
 public class Game : MonoBehaviour
 {
     //Reference from Unity IDE
     public GameObject chesspiece;
+    public string playerA; 
+    public string playerB;
+    
 
     //Matrices needed, positions of each of the GameObjects
     //Also separate arrays for the players in order to easily keep track of them all
@@ -26,6 +36,34 @@ public class Game : MonoBehaviour
     //that Unity can call for you
     public void Start()
     {
+        Counter.roundCounter++;        
+        if (Counter.roundCounter % 2 == 0) //No of game round is even -> 2,4,6 etc. player A=black and player B=white
+        {
+            playerA = "black";
+            playerB = "white";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n  won "+ Counter.winCounterPlayerA + " times";
+        }
+        else
+        {
+            playerA = "white";
+            playerB = "black";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " times";
+        }
+        GameObject.FindGameObjectWithTag("GameRound").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("GameRound").GetComponent<Text>().text = "Game round " + Counter.roundCounter;
+        /*GameObject.FindGameObjectWithTag("WinCounterA").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("WinCounterA").GetComponent<Text>().text = "Player A won " + Counter.winCounterPlayerA + " times";
+        GameObject.FindGameObjectWithTag("WinCounterB").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("WinCounterB").GetComponent<Text>().text = "Player B won " + Counter.winCounterPlayerB + " times";*/
+
+
+
         playerWhite = new GameObject[] { Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
@@ -132,9 +170,46 @@ public class Game : MonoBehaviour
         gameOver = true;
 
         //Using UnityEngine.UI is needed here
-        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().enabled = true;
-        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().text = playerWinner + " is the winner";
+        //GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().enabled = true;
+        //GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().text = playerWinner + " is the winner";
 
-        GameObject.FindGameObjectWithTag("RestartText").GetComponent<Text>().enabled = true;
+        //GameObject.FindGameObjectWithTag("RestartText").GetComponent<Text>().enabled = true;
+
+        if(playerWinner == "white" && playerA == "white") //player A won
+        {
+            Counter.winCounterPlayerA++;
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("TrophyWinnerWhite").GetComponent<Image>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
+        }
+        else if(playerWinner == "white" && playerB == "white") //player B won
+        {
+            Counter.winCounterPlayerB++;
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("TrophyWinnerWhite").GetComponent<Image>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
+
+        }
+        else if(playerWinner == "black" && playerA == "black") //player A won
+        {
+            Counter.winCounterPlayerA++;
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("TrophyWinnerBlack").GetComponent<Image>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().text = "--> WINNER";
+        }
+        else //player B won
+        {
+            Counter.winCounterPlayerB++;
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("TrophyWinnerBlack").GetComponent<Image>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().enabled = true;
+            GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().text = "--> WINNER";
+        }
+        
+
+
     }
 }
