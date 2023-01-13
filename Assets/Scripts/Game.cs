@@ -4,12 +4,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public class Counter
 {
     public static int roundCounter = 0;
     public static int winCounterPlayerA = 0; 
     public static int winCounterPlayerB = 0;
 }
+
+
 
 public class Game : MonoBehaviour
 {
@@ -32,10 +35,22 @@ public class Game : MonoBehaviour
     //Game Ending
     private bool gameOver = false;
 
+
+    //Timer 
+    public float timeRemainingWhite;
+    public bool timerIsRunningWhite = false;
+    public Text timeTextWhite;
+    public float timeRemainingBlack;
+    public bool timerIsRunningBlack = false;
+    public Text timeTextBlack;
+
     //Unity calls this right when the game starts, there are a few built in functions
     //that Unity can call for you
     public void Start()
     {
+
+        timerIsRunningWhite = true;
+        timerIsRunningBlack = true;
         Counter.roundCounter++;        
         if (Counter.roundCounter % 2 == 0) //No of game round is even -> 2,4,6 etc. player A=black and player B=white
         {
@@ -83,6 +98,9 @@ public class Game : MonoBehaviour
             SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
         }
+
+        
+        
     }
 
     public GameObject Create(string name, int x, int y)
@@ -163,8 +181,62 @@ public class Game : MonoBehaviour
             //Using UnityEngine.SceneManagement is needed here
             SceneManager.LoadScene("Game"); //Restarts the game by loading the scene over again
         }
+
+        
+
+        if (timerIsRunningWhite && currentPlayer == "white")
+        {
+            if (timeRemainingWhite > 0)
+            {
+                Debug.Log(timeRemainingWhite);
+                Debug.Log("Delta " + Time.deltaTime);
+                timeRemainingWhite -= Time.deltaTime;
+                DisplayTimeWhite(timeRemainingWhite);
+            }
+            else
+            {
+                Debug.Log("Time has run out!");
+                timeRemainingWhite = 0;
+                timerIsRunningWhite = false;
+                Winner("PlayerBlack");
+            }
+        }
+
+        if (timerIsRunningBlack && currentPlayer == "black" )
+        {
+            if (timeRemainingBlack > 0)
+            {
+                timeRemainingBlack -= Time.deltaTime;
+                DisplayTimeBlack(timeRemainingBlack);
+            }
+            else
+            {
+                Debug.Log("Time has run out!");
+                timeRemainingBlack = 0;
+                timerIsRunningBlack = false;
+                Winner("PlayerWhite");
+            }
+        }
     }
-    
+
+    void DisplayTimeBlack(float timeToDisplay)
+    {
+        timeToDisplay += 1;
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        GameObject.FindGameObjectWithTag("TimerBlack").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("TimerBlack").GetComponent<Text>().text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    void DisplayTimeWhite(float timeToDisplay)
+    {
+        timeToDisplay += 1;
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        GameObject.FindGameObjectWithTag("TimerWhite").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("TimerWhite").GetComponent<Text>().text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
     public void Winner(string playerWinner)
     {
         gameOver = true;
@@ -178,7 +250,7 @@ public class Game : MonoBehaviour
         if(playerWinner == "white" && playerA == "white") //player A won
         {
             Counter.winCounterPlayerA++;
-            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " x";
             GameObject.FindGameObjectWithTag("TrophyWinnerWhite").GetComponent<Image>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
@@ -186,7 +258,7 @@ public class Game : MonoBehaviour
         else if(playerWinner == "white" && playerB == "white") //player B won
         {
             Counter.winCounterPlayerB++;
-            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " x";
             GameObject.FindGameObjectWithTag("TrophyWinnerWhite").GetComponent<Image>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
@@ -195,7 +267,7 @@ public class Game : MonoBehaviour
         else if(playerWinner == "black" && playerA == "black") //player A won
         {
             Counter.winCounterPlayerA++;
-            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n won " + Counter.winCounterPlayerA + " x";
             GameObject.FindGameObjectWithTag("TrophyWinnerBlack").GetComponent<Image>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().text = "--> WINNER";
@@ -203,7 +275,7 @@ public class Game : MonoBehaviour
         else //player B won
         {
             Counter.winCounterPlayerB++;
-            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " x";
             GameObject.FindGameObjectWithTag("TrophyWinnerBlack").GetComponent<Image>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().text = "--> WINNER";
@@ -212,4 +284,6 @@ public class Game : MonoBehaviour
 
 
     }
+
+    
 }

@@ -19,6 +19,8 @@ TagManager:
   - Trophy
   - TrophyWinnerBlack
   - TrophyWinnerWhite
+  - TimerBlack
+  - TimerWhite
   layers:
   - Default
   - TransparentFX
