@@ -188,8 +188,7 @@ public class Game : MonoBehaviour
         {
             if (timeRemainingWhite > 0)
             {
-                Debug.Log(timeRemainingWhite);
-                Debug.Log("Delta " + Time.deltaTime);
+              
                 timeRemainingWhite -= Time.deltaTime;
                 DisplayTimeWhite(timeRemainingWhite);
             }
