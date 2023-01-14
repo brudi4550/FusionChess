@@ -269,10 +269,17 @@ public class Chessman : MonoBehaviour
             this.name != "white_knook" && this.name != "black_knook" &&
             this.name != "white_rishop" && this.name != "black_rishop" &&
             this.name != "white_kneen" && this.name != "black_kneen" &&
-            this.name != "white_pishop" && this.name != "black_pishop")
+            this.name != "white_pishop" && this.name != "black_pishop" &&
+            this.name != "white_king" && this.name != "black_king")
         {
+            Debug.Log("LineMovePlate");
             Debug.Log(this.name);
             Debug.Log("Name");
+            Debug.Log("sc.GetPosition(x, y).GetComponent<Chessman>().player");
+            Debug.Log(sc.GetPosition(x, y).GetComponent<Chessman>().player);
+            Debug.Log("Player");
+            Debug.Log(player);
+            
             MovePlateMergeSpawn(x, y);
         }
     }
@@ -325,7 +332,11 @@ public class Chessman : MonoBehaviour
                 this.name != "white_kneen" && this.name != "black_kneen" && 
                 this.name != "white_pishop" && this.name != "black_pishop")
             {
+                Debug.Log("PointMovePLate");
+                Debug.Log(this.name);
+                Debug.Log("Name");
                 MovePlateMergeSpawn(x, y);
+                
             }
             //else if (cp.GetComponent<Chessman>().player == player && cp != null && this.name != "white_king" && this.name != "black_king")
             //{
@@ -359,8 +370,12 @@ public class Chessman : MonoBehaviour
                 this.name != "white_knishop" && this.name != "black_knishop" &&
                 this.name != "white_rishop" && this.name != "black_rishop" &&
                 this.name != "white_kneen" && this.name != "black_kneen" &&
-                this.name != "white_pishop" && this.name != "black_pishop")
-            {   
+                this.name != "white_pishop" && this.name != "black_pishop" &&
+                this.name != "white_king" && this.name != "black_king")
+            {
+                Debug.Log("PawnMovePlate");
+                Debug.Log(this.name);
+                Debug.Log("Name");
                 MovePlateMergeSpawn(x, y);
             }
 
@@ -433,6 +448,10 @@ public class Chessman : MonoBehaviour
         MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.merge = true;
         mpScript.SetReference(gameObject);
+        Debug.Log("MovePlateMergeSpawn");
+        Debug.Log(mpScript.GetReference());
+        Debug.Log(controller.GetComponent<Game>().GetPosition(matrixX, matrixY));
+        
         mpScript.SetCoords(matrixX, matrixY);
     }
 }

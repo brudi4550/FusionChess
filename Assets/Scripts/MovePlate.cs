@@ -20,7 +20,7 @@ public class MovePlate : MonoBehaviour
 
     public void Start()
     {
-        if (attack)
+        if (attack) 
         {
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
@@ -28,8 +28,30 @@ public class MovePlate : MonoBehaviour
         
         if (merge)
         {
+            Debug.Log("merge MovePlate");
+            
+            Debug.Log(GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name);
             //Set to green
-            gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+            if ( GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_bishop" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_knight" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_bishop" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_pawn" ||
+                (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_queen" && reference.GetComponent<Chessman>().name == "black_knight" ||
+                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight" ))
+            { 
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+            } 
+            //Set to transparent
+            else
+            {
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            }
+            Debug.Log(gameObject.GetComponent<SpriteRenderer>());
+
         }
     }
 
