@@ -422,12 +422,13 @@ public class Chessman : MonoBehaviour
                 Debug.Log(this.name);
                 Debug.Log("Name");
 
-                this.name != "white_rishop" && this.name != "black_rishop")
-            {
+                if(this.name != "white_rishop" && this.name != "black_rishop")
+                {
 
-                MovePlateMergeSpawn(x, y);
+                    MovePlateMergeSpawn(x, y);
+                }
+
             }
-
         }
     }
 
@@ -575,7 +576,8 @@ public class Chessman : MonoBehaviour
         Debug.Log("MovePlateMergeSpawn");
         Debug.Log(mpScript.GetReference());
         Debug.Log(controller.GetComponent<Game>().GetPosition(matrixX, matrixY));
-        
+
         mpScript.SetCoords(matrixX, matrixY);
     }
+    
 }
