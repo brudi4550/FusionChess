@@ -61,18 +61,18 @@ public class Game : MonoBehaviour
             playerA = "black";
             playerB = "white";
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().enabled = true;
-            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " x";
             GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().enabled = true;
-            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n  won "+ Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n  won "+ Counter.winCounterPlayerA + " x";
         }
         else
         {
             playerA = "white";
             playerB = "black";
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().enabled = true;
-            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " times";
+            GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " x";
             GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().enabled = true;
-            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " times";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player B = black \n won " + Counter.winCounterPlayerB + " x";
         }
         GameObject.FindGameObjectWithTag("GameRound").GetComponent<Text>().enabled = true;
         GameObject.FindGameObjectWithTag("GameRound").GetComponent<Text>().text = "Game round " + Counter.roundCounter;
