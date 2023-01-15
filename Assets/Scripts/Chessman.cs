@@ -148,6 +148,7 @@ public class Chessman : MonoBehaviour
             case "black_king":
             case "white_king":
                 SurroundMovePlate();
+                CastleMovePlate();
                 break;
             case "black_rook":
             case "white_rook":
@@ -268,6 +269,32 @@ public class Chessman : MonoBehaviour
         PointMovePlate(xBoard + 1, yBoard + 1);
     }
 
+    public void CastleMovePlate()
+    {
+        if (controller.GetComponent<Game>().LongCastlePossible(player))
+        {
+            if (player.Equals("white"))
+            {
+                CastleMovePlateSpawn(2, 0, "long");
+            }
+            else
+            {
+                CastleMovePlateSpawn(2, 7, "long");
+            }
+        }
+        if (controller.GetComponent<Game>().ShortCastlePossible(player))
+        {
+            if (player.Equals("white"))
+            {
+                CastleMovePlateSpawn(6, 0, "short");
+            }
+            else
+            {
+                CastleMovePlateSpawn(6, 7, "short");
+            }
+        }
+    }
+
     public void PointMovePlate(int x, int y)
     {
         Game sc = controller.GetComponent<Game>();
@@ -385,6 +412,35 @@ public class Chessman : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void CastleMovePlateSpawn(int matrixX, int matrixY, string type)
+    {
+        //Get the board value in order to convert to xy coords
+        float x = matrixX;
+        float y = matrixY;
+
+        //Adjust by variable offset
+        x *= 0.66f;
+        y *= 0.66f;
+
+        //Add constants (pos 0,0)
+        x += -2.3f;
+        y += -2.3f;
+
+        //Set actual unity values
+        GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
+        MovePlate mpScript = mp.GetComponent<MovePlate>();
+        mpScript.SetReference(gameObject);
+        if (type.Equals("short"))
+        {
+            mpScript.shortCastle = true;
+        }
+        else
+        {
+            mpScript.longCastle = true;
+        }
+        mpScript.SetCoords(matrixX, matrixY);
     }
 
     public void MovePlateSpawn(int matrixX, int matrixY)
