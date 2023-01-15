@@ -21,6 +21,9 @@ public class MovePlate : MonoBehaviour
 
     public bool enPassant = false;
 
+    public bool longCastle = false;
+    public bool shortCastle = false;
+
     public void Start()
     {
         if (attack)
@@ -180,12 +183,45 @@ public class MovePlate : MonoBehaviour
         Chessman piece = references.GetComponent<Chessman>();
         if (enPassant)
         {
-            int factor = game.GetCurrentPlayer() == "white" ? -1 : 1;
+            int factor = game.GetCurrentPlayer().Equals("white") ? -1 : 1;
             game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard() + factor);
+        }
+        else if (shortCastle)
+        {
+            if (game.GetCurrentPlayer().Equals("white"))
+            {
+                GameObject rook = game.GetPosition(7, 0);
+                rook.GetComponent<Chessman>().SetXBoard(5);
+                rook.GetComponent<Chessman>().SetCoords();
+                game.SetPosition(rook);
+            }
+            else
+            {
+                GameObject rook = game.GetPosition(7, 7);
+                rook.GetComponent<Chessman>().SetXBoard(5);
+                rook.GetComponent<Chessman>().SetCoords();
+                game.SetPosition(rook);
+            }
+        }
+        else if (longCastle)
+        {
+            if (game.GetCurrentPlayer().Equals("white"))
+            {
+                GameObject rook = game.GetPosition(0, 0);
+                rook.GetComponent<Chessman>().SetXBoard(3);
+                rook.GetComponent<Chessman>().SetCoords();
+                game.SetPosition(rook);
+            }
+            else
+            {
+                GameObject rook = game.GetPosition(0, 7);
+                rook.GetComponent<Chessman>().SetXBoard(3);
+                rook.GetComponent<Chessman>().SetCoords();
+                game.SetPosition(rook);
+            }
         }
         else
         {
-
             game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
         }
 

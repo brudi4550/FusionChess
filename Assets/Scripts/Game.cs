@@ -76,9 +76,12 @@ public class Game : MonoBehaviour
 
     public GameObject GetPosition(int x, int y)
     {
-        try {
+        try
+        {
             return positions[x, y];
-        } catch (IndexOutOfRangeException e) {
+        }
+        catch (IndexOutOfRangeException e)
+        {
             return null;
         }
     }
@@ -104,7 +107,81 @@ public class Game : MonoBehaviour
         moves.Add(m);
     }
 
-    public Move GetLastMove() {
+    public bool LongCastlePossible(String player)
+    {
+        if (player.Equals("white"))
+        {
+            if (!pieceHasMoved(0, 0) && !pieceHasMoved(4, 0))
+            {
+                return
+                    GetPosition(1, 0) == null &&
+                    GetPosition(2, 0) == null &&
+                    GetPosition(3, 0) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!pieceHasMoved(0, 7) && !pieceHasMoved(4, 7))
+            {
+                return
+                    GetPosition(1, 7) == null &&
+                    GetPosition(2, 7) == null &&
+                    GetPosition(3, 7) == null;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public bool ShortCastlePossible(String player)
+    {
+        if (player.Equals("white"))
+        {
+            if (!pieceHasMoved(7, 0) && !pieceHasMoved(4, 0))
+            {
+                return
+                    GetPosition(5, 0) == null &&
+                    GetPosition(6, 0) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!pieceHasMoved(7, 7) && !pieceHasMoved(4, 7))
+            {
+
+                return
+                    GetPosition(5, 7) == null &&
+                    GetPosition(6, 7) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public bool pieceHasMoved(int orgX, int orgY)
+    {
+        foreach (Move m in moves)
+        {
+            if (m.getFromX() == orgX && m.getFromY() == orgY)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Move GetLastMove()
+    {
         return moves.DefaultIfEmpty(null).Last();
     }
 
