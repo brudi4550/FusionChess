@@ -26,7 +26,7 @@ public class MovePlate : MonoBehaviour
 
     public void Start()
     {
-        if (attack)
+        if (attack) 
         {
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
@@ -34,8 +34,30 @@ public class MovePlate : MonoBehaviour
 
         if (merge)
         {
+            Debug.Log("merge MovePlate");
+            
+            Debug.Log(GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name);
             //Set to green
-            gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+            if ( GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_bishop" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_knight" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_bishop" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_pawn" ||
+                (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_queen" && reference.GetComponent<Chessman>().name == "black_knight" ||
+                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight" ))
+            { 
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+            } 
+            //Set to transparent
+            else
+            {
+                gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            }
+            Debug.Log(gameObject.GetComponent<SpriteRenderer>());
+
         }
     }
 
@@ -166,7 +188,44 @@ public class MovePlate : MonoBehaviour
                 OnMouseUpReference(newReference);
             }
             //KNEEN
+            if ((cp.name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight") | (reference.GetComponent<Chessman>().name == "white_queen" && cp.name == "white_knight"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_kneen", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_queen" && reference.GetComponent<Chessman>().name == "black_knight") | (reference.GetComponent<Chessman>().name == "black_queen" && cp.name == "black_knight"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_kneen", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+
             //PISHOP
+            if ((cp.name == "white_pawn" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_pawn" && cp.name == "white_bishop"))
+            {
+                Destroy(cp);
+                Debug.Log(cp.name);
+                Debug.Log(reference.GetComponent<Chessman>().name);
+                GameObject newReference = controller.GetComponent<Game>().Create("white_pishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
+            if ((cp.name == "black_pawn" && reference.GetComponent<Chessman>().name == "black_bishop") | (reference.GetComponent<Chessman>().name == "black_pawn" && cp.name == "black_bishop"))
+            {
+                Destroy(cp);
+                GameObject newReference = controller.GetComponent<Game>().Create("black_pishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
+                Destroy(reference);
+
+                OnMouseUpReference(newReference);
+            }
 
 
         }

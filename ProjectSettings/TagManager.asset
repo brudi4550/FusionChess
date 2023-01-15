@@ -7,6 +7,20 @@ TagManager:
   - MovePlate
   - WinnerText
   - RestartText
+  - WinCounter1
+  - WinCounter2
+  - GameRound
+  - WinCounterA
+  - WinCounterB
+  - PlayerWhite
+  - PlayerBlack
+  - WinnerWhite
+  - WinnerBlack
+  - Trophy
+  - TrophyWinnerBlack
+  - TrophyWinnerWhite
+  - TimerBlack
+  - TimerWhite
   layers:
   - Default
   - TransparentFX
