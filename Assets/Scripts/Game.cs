@@ -1,8 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Helpers;
+using System;
 
 
 public class Counter
@@ -31,6 +33,8 @@ public class Game : MonoBehaviour
 
     //current turn
     private string currentPlayer = "white";
+
+    private List<Move> moves = new List<Move>();
 
     //Game Ending
     private bool gameOver = false;
@@ -114,20 +118,9 @@ public class Game : MonoBehaviour
         return obj;
     }
 
-    public GameObject Create(string name)
-    {
-        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
-        Chessman cm = obj.GetComponent<Chessman>(); //We have access to the GameObject, we need the script
-        cm.name = name; //This is a built in variable that Unity has, so we did not have to declare it before
-        cm.Activate(); //It has everything set up so it can now Activate()
-        return obj;
-    }
-
-
     public void SetPosition(GameObject obj)
     {
         Chessman cm = obj.GetComponent<Chessman>();
-
         //Overwrites either empty space or whatever was there
         positions[cm.GetXBoard(), cm.GetYBoard()] = obj;
     }
@@ -139,7 +132,14 @@ public class Game : MonoBehaviour
 
     public GameObject GetPosition(int x, int y)
     {
-        return positions[x, y];
+        try
+        {
+            return positions[x, y];
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            return null;
+        }
     }
 
     public bool PositionOnBoard(int x, int y)
@@ -158,7 +158,88 @@ public class Game : MonoBehaviour
         return gameOver;
     }
 
-    
+    public void AddMove(Move m)
+    {
+        moves.Add(m);
+    }
+
+    public bool LongCastlePossible(String player)
+    {
+        if (player.Equals("white"))
+        {
+            if (!pieceHasMoved(0, 0) && !pieceHasMoved(4, 0))
+            {
+                return
+                    GetPosition(1, 0) == null &&
+                    GetPosition(2, 0) == null &&
+                    GetPosition(3, 0) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!pieceHasMoved(0, 7) && !pieceHasMoved(4, 7))
+            {
+                return
+                    GetPosition(1, 7) == null &&
+                    GetPosition(2, 7) == null &&
+                    GetPosition(3, 7) == null;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public bool ShortCastlePossible(String player)
+    {
+        if (player.Equals("white"))
+        {
+            if (!pieceHasMoved(7, 0) && !pieceHasMoved(4, 0))
+            {
+                return
+                    GetPosition(5, 0) == null &&
+                    GetPosition(6, 0) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!pieceHasMoved(7, 7) && !pieceHasMoved(4, 7))
+            {
+
+                return
+                    GetPosition(5, 7) == null &&
+                    GetPosition(6, 7) == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public bool pieceHasMoved(int orgX, int orgY)
+    {
+        foreach (Move m in moves)
+        {
+            if (m.getFromX() == orgX && m.getFromY() == orgY)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Move GetLastMove()
+    {
+        return moves.DefaultIfEmpty(null).Last();
+    }
 
     public void NextTurn()
     {
@@ -218,6 +299,7 @@ public class Game : MonoBehaviour
         }
     }
 
+
     void DisplayTimeBlack(float timeToDisplay)
     {
         timeToDisplay += 1;
@@ -235,6 +317,7 @@ public class Game : MonoBehaviour
         GameObject.FindGameObjectWithTag("TimerWhite").GetComponent<Text>().enabled = true;
         GameObject.FindGameObjectWithTag("TimerWhite").GetComponent<Text>().text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
+
 
     public void Winner(string playerWinner)
     {
