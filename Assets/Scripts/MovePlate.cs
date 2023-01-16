@@ -23,10 +23,11 @@ public class MovePlate : MonoBehaviour
 
     public bool longCastle = false;
     public bool shortCastle = false;
+    public bool promotion = false;
 
     public void Start()
     {
-        if (attack) 
+        if (attack)
         {
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
@@ -35,10 +36,10 @@ public class MovePlate : MonoBehaviour
         if (merge)
         {
             Debug.Log("merge MovePlate");
-            
+
             Debug.Log(GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name);
             //Set to green
-            if ( GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
+            if (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_bishop" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_rook" ||
@@ -47,10 +48,10 @@ public class MovePlate : MonoBehaviour
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_rook" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_pawn" ||
                 (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_queen" && reference.GetComponent<Chessman>().name == "black_knight" ||
-                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight" ))
-            { 
+                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight"))
+            {
                 gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 1.0f, 0.0f, 1.0f);
-            } 
+            }
             //Set to transparent
             else
             {
@@ -279,6 +280,20 @@ public class MovePlate : MonoBehaviour
                 game.SetPosition(rook);
             }
         }
+        else if (promotion)
+        {
+            if (game.GetCurrentPlayer().Equals("white"))
+            {
+                Destroy(references);
+                references = game.Create("white_queen", piece.GetXBoard(), piece.GetYBoard());
+            }
+            else
+            {
+                Destroy(references);
+                references = game.Create("black_queen", piece.GetXBoard(), piece.GetYBoard());
+            }
+            piece = references.GetComponent<Chessman>();
+        }
         else
         {
             game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
@@ -295,6 +310,8 @@ public class MovePlate : MonoBehaviour
 
         //Update the matrix
         game.SetPosition(references);
+
+
 
         //Switch Current Player
         game.NextTurn();
