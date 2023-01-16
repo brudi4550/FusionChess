@@ -239,7 +239,7 @@ public class Chessman : MonoBehaviour
                 LineMovePlate(-1, 1);
                 LineMovePlate(-1, -1);
                 PawnMovePlate(xBoard, yBoard + 1);
-                break; 
+                break;
             case "black_pishop":
                 LineMovePlate(1, 1);
                 LineMovePlate(1, -1);
@@ -285,7 +285,7 @@ public class Chessman : MonoBehaviour
             Debug.Log(sc.GetPosition(x, y).GetComponent<Chessman>().player);
             Debug.Log("Player");
             Debug.Log(player);
-            
+
             MovePlateMergeSpawn(x, y);
         }
     }
@@ -361,14 +361,14 @@ public class Chessman : MonoBehaviour
                 this.name != "white_knishop" && this.name != "black_knishop" &&
                 this.name != "white_knook" && this.name != "black_knook" &&
                 this.name != "white_rishop" && this.name != "black_rishop" &&
-                this.name != "white_kneen" && this.name != "black_kneen" && 
+                this.name != "white_kneen" && this.name != "black_kneen" &&
                 this.name != "white_pishop" && this.name != "black_pishop")
             {
                 Debug.Log("PointMovePLate");
                 Debug.Log(this.name);
                 Debug.Log("Name");
                 MovePlateMergeSpawn(x, y);
-                
+
             }
             //else if (cp.GetComponent<Chessman>().player == player && cp != null && this.name != "white_king" && this.name != "black_king")
             //{
@@ -386,7 +386,18 @@ public class Chessman : MonoBehaviour
             //checking for first move for pawns
             if (game.GetPosition(x, y) == null)
             {
-                MovePlateSpawn(x, y);
+                if (y == 7 && player.Equals("white"))
+                {
+                    PromotionMovePlateSpawn(x, y);
+                }
+                else if (y == 0 && player.Equals("black"))
+                {
+                    PromotionMovePlateSpawn(x, y);
+                }
+                else
+                {
+                    MovePlateSpawn(x, y);
+                }
                 if (y == 2 && player == "white" && game.GetPosition(x, y + 1) == null)
                 {
                     MovePlateSpawn(x, y + 1);
@@ -422,7 +433,7 @@ public class Chessman : MonoBehaviour
                 Debug.Log(this.name);
                 Debug.Log("Name");
 
-                if(this.name != "white_rishop" && this.name != "black_rishop")
+                if (this.name != "white_rishop" && this.name != "black_rishop")
                 {
 
                     MovePlateMergeSpawn(x, y);
@@ -506,6 +517,28 @@ public class Chessman : MonoBehaviour
         mpScript.SetCoords(matrixX, matrixY);
     }
 
+    public void PromotionMovePlateSpawn(int matrixX, int matrixY)
+    {
+        //Get the board value in order to convert to xy coords
+        float x = matrixX;
+        float y = matrixY;
+
+        //Adjust by variable offset
+        x *= 0.66f;
+        y *= 0.66f;
+
+        //Add constants (pos 0,0)
+        x += -2.3f;
+        y += -2.3f;
+
+        //Set actual unity values
+        GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
+        MovePlate mpScript = mp.GetComponent<MovePlate>();
+        mpScript.SetReference(gameObject);
+        mpScript.promotion = true;
+        mpScript.SetCoords(matrixX, matrixY);
+    }
+
     public void MovePlateSpawn(int matrixX, int matrixY)
     {
         //Get the board value in order to convert to xy coords
@@ -579,5 +612,5 @@ public class Chessman : MonoBehaviour
 
         mpScript.SetCoords(matrixX, matrixY);
     }
-    
+
 }
