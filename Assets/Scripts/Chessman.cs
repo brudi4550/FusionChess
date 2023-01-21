@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Helpers;
+using System;
 
 public class Chessman : MonoBehaviour
 {
@@ -258,18 +259,18 @@ public class Chessman : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
-        while (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) == null)
+        while (sc.isPositionOnBoard(x, y) && sc.GetPosition(x, y) == null)
         {
             MovePlateSpawn(x, y);
             x += xIncrement;
             y += yIncrement;
         }
 
-        if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
+        if (sc.isPositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
         {
             MovePlateAttackSpawn(x, y, false);
         }
-        if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player == player && this.name != "white_queen" && this.name != "black_queen" &&
+        if (sc.isPositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player == player && this.name != "white_queen" && this.name != "black_queen" &&
             this.name != "white_rawn" && this.name != "black_rawn" && this.name != "white_pnight" && this.name != "black_pnight" &&
             this.name != "white_knishop" && this.name != "black_knishop" &&
             this.name != "white_knook" && this.name != "black_knook" &&
@@ -344,7 +345,7 @@ public class Chessman : MonoBehaviour
     {
         Game sc = controller.GetComponent<Game>();
 
-        if (sc.PositionOnBoard(x, y))
+        if (sc.isPositionOnBoard(x, y))
         {
             GameObject cp = sc.GetPosition(x, y);
 
@@ -380,7 +381,7 @@ public class Chessman : MonoBehaviour
     public void PawnMovePlate(int x, int y)
     {
         Game game = controller.GetComponent<Game>();
-        if (game.PositionOnBoard(x, y))
+        if (game.isPositionOnBoard(x, y))
         {
 
             //checking for first move for pawns
@@ -410,12 +411,12 @@ public class Chessman : MonoBehaviour
 
             checkForEnPassant(game, x, y);
 
-            if (game.PositionOnBoard(x + 1, y) && game.GetPosition(x + 1, y) != null && game.GetPosition(x + 1, y).GetComponent<Chessman>().player != player)
+            if (game.isPositionOnBoard(x + 1, y) && game.GetPosition(x + 1, y) != null && game.GetPosition(x + 1, y).GetComponent<Chessman>().player != player)
             {
                 MovePlateAttackSpawn(x + 1, y, false);
             }
 
-            if (game.PositionOnBoard(x - 1, y) && game.GetPosition(x - 1, y) != null && game.GetPosition(x - 1, y).GetComponent<Chessman>().player != player)
+            if (game.isPositionOnBoard(x - 1, y) && game.GetPosition(x - 1, y) != null && game.GetPosition(x - 1, y).GetComponent<Chessman>().player != player)
             {
                 MovePlateAttackSpawn(x - 1, y, false);
             }
@@ -541,6 +542,9 @@ public class Chessman : MonoBehaviour
 
     public void MovePlateSpawn(int matrixX, int matrixY)
     {
+        if (!isLegalMove(matrixX, matrixY)) 
+            return;
+
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
@@ -560,6 +564,8 @@ public class Chessman : MonoBehaviour
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
+
+
 
     public void MovePlateAttackSpawn(int matrixX, int matrixY, bool enPassant)
     {
@@ -613,4 +619,15 @@ public class Chessman : MonoBehaviour
         mpScript.SetCoords(matrixX, matrixY);
     }
 
+    public bool isLegalMove(int x, int y)
+    {
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] currBoard = game.GetPositions();
+        GameObject[,] copy = currBoard.Clone() as GameObject[,];
+        GameObject piece = copy[xBoard, yBoard];
+        copy[xBoard, yBoard] = null;
+        copy[x, y] = piece;
+        bool isLegalMove = !game.isKingInCheck(player, copy);
+        return isLegalMove;
+    }
 }
