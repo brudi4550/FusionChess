@@ -277,7 +277,8 @@ public class Chessman : MonoBehaviour
             this.name != "white_rishop" && this.name != "black_rishop" &&
             this.name != "white_kneen" && this.name != "black_kneen" &&
             this.name != "white_pishop" && this.name != "black_pishop" &&
-            this.name != "white_king" && this.name != "black_king")
+            this.name != "white_king" && this.name != "black_king" &&
+            !sc.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
         {
             Debug.Log("LineMovePlate");
             Debug.Log(this.name);
@@ -363,7 +364,8 @@ public class Chessman : MonoBehaviour
                 this.name != "white_knook" && this.name != "black_knook" &&
                 this.name != "white_rishop" && this.name != "black_rishop" &&
                 this.name != "white_kneen" && this.name != "black_kneen" &&
-                this.name != "white_pishop" && this.name != "black_pishop")
+                this.name != "white_pishop" && this.name != "black_pishop" &&
+                !sc.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
             {
                 Debug.Log("PointMovePLate");
                 Debug.Log(this.name);
@@ -428,7 +430,8 @@ public class Chessman : MonoBehaviour
                 this.name != "white_rishop" && this.name != "black_rishop" &&
                 this.name != "white_kneen" && this.name != "black_kneen" &&
                 this.name != "white_pishop" && this.name != "black_pishop" &&
-                this.name != "white_king" && this.name != "black_king")
+                this.name != "white_king" && this.name != "black_king" &&
+                !game.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
             {
                 Debug.Log("PawnMovePlate");
                 Debug.Log(this.name);
@@ -491,6 +494,21 @@ public class Chessman : MonoBehaviour
 
     public void CastleMovePlateSpawn(int matrixX, int matrixY, string type)
     {
+        //simulate move and check if the move is legal before spawning plate
+        //king is not allowed to be in check in when castling and also not in the two positions next to him
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] copy1 = getBoardCopy();
+        GameObject[,] copy2 = getBoardCopy();
+        GameObject[,] copy3 = getBoardCopy();
+        copy2[xBoard, yBoard] = null;
+        copy2[matrixX - 1, matrixY] = game.CreatePiece(player + "_king");
+        copy3[xBoard, yBoard] = null;
+        copy3[matrixX, matrixY] = game.CreatePiece(player + "_king");
+        if (game.isKingInCheck(player, copy1) ||
+            game.isKingInCheck(player, copy2) ||
+            game.isKingInCheck(player, copy3))
+            return;
+
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
@@ -520,6 +538,14 @@ public class Chessman : MonoBehaviour
 
     public void PromotionMovePlateSpawn(int matrixX, int matrixY)
     {
+        //simulate move and check if the move is legal before spawning plate
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] copy = getBoardCopy();
+        copy[xBoard, yBoard] = null;
+        copy[matrixX, matrixY] = game.Create(player + "_queen", matrixX, matrixY);
+        if (game.isKingInCheck(player, copy))
+            return;
+
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
@@ -542,7 +568,13 @@ public class Chessman : MonoBehaviour
 
     public void MovePlateSpawn(int matrixX, int matrixY)
     {
-        if (!isLegalMove(matrixX, matrixY)) 
+        //simulate move and check if the move is legal before spawning plate
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] copy = getBoardCopy();
+        GameObject piece = copy[xBoard, yBoard];
+        copy[xBoard, yBoard] = null;
+        copy[matrixX, matrixY] = piece;
+        if (game.isKingInCheck(player, copy))
             return;
 
         //Get the board value in order to convert to xy coords
@@ -565,10 +597,17 @@ public class Chessman : MonoBehaviour
         mpScript.SetCoords(matrixX, matrixY);
     }
 
-
-
     public void MovePlateAttackSpawn(int matrixX, int matrixY, bool enPassant)
     {
+        //simulate move and check if the move is legal before spawning plate
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] copy = getBoardCopy();
+        GameObject piece = copy[xBoard, yBoard];
+        copy[xBoard, yBoard] = null;
+        copy[matrixX, matrixY] = piece;
+        if (game.isKingInCheck(player, copy))
+            return;
+
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
@@ -594,6 +633,21 @@ public class Chessman : MonoBehaviour
     // Methode to merge 
     public void MovePlateMergeSpawn(int matrixX, int matrixY)
     {
+        //simulate move and check if the move is legal before spawning plate
+        Game game = controller.GetComponent<Game>();
+        GameObject[,] copy = getBoardCopy();
+        GameObject piece = copy[xBoard, yBoard];
+        string pieceName1 = piece.GetComponent<Chessman>().name.Split("_")[1];
+        string pieceName2 = copy[matrixX, matrixY].GetComponent<Chessman>().name.Split("_")[1];
+        string combo = getCombination(pieceName1, pieceName2);
+        Debug.Log(pieceName1);
+        Debug.Log(pieceName2);
+        Debug.Log(combo);
+        copy[xBoard, yBoard] = null;
+        copy[matrixX, matrixY] = game.CreatePiece(player + "_" + combo);
+        if (game.isKingInCheck(player, copy))
+            return;
+
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
@@ -619,15 +673,57 @@ public class Chessman : MonoBehaviour
         mpScript.SetCoords(matrixX, matrixY);
     }
 
-    public bool isLegalMove(int x, int y)
+    public GameObject[,] getBoardCopy()
     {
         Game game = controller.GetComponent<Game>();
         GameObject[,] currBoard = game.GetPositions();
-        GameObject[,] copy = currBoard.Clone() as GameObject[,];
-        GameObject piece = copy[xBoard, yBoard];
-        copy[xBoard, yBoard] = null;
-        copy[x, y] = piece;
-        bool isLegalMove = !game.isKingInCheck(player, copy);
-        return isLegalMove;
+        return currBoard.Clone() as GameObject[,];
+    }
+
+    public string getCombination(string pieceName1, string pieceName2)
+    {
+        switch (pieceName1)
+        {
+            case "pawn":
+                switch (pieceName2)
+                {
+                    case "knight": return "pnight";
+                    case "bishop": return "pishop";
+                    case "rook": return "rawn";
+                }
+                break;
+            case "rook":
+                switch (pieceName2)
+                {
+                    case "pawn": return "rawn";
+                    case "knight": return "knook";
+                    case "bishop": return "rishop";
+                }
+                break;
+            case "knight":
+                switch (pieceName2)
+                {
+                    case "pawn": return "pnight";
+                    case "rook": return "knook";
+                    case "bishop": return "knishop";
+                    case "queen": return "kneen";
+                }
+                break;
+            case "bishop":
+                switch (pieceName2)
+                {
+                    case "pawn": return "pishop";
+                    case "knight": return "knishop";
+                    case "rook": return "rishop";
+                }
+                break;
+            case "queen":
+                switch (pieceName2)
+                {
+                    case "knight": return "kneen";
+                }
+                break;
+        }
+        return "";
     }
 }

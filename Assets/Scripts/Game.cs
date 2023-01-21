@@ -118,6 +118,14 @@ public class Game : MonoBehaviour
         return obj;
     }
 
+    public GameObject CreatePiece(string name)
+    {
+        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
+        Chessman cm = obj.GetComponent<Chessman>();
+        cm.name = name;
+        return obj;
+    }
+
     public void SetPosition(GameObject obj)
     {
         Chessman cm = obj.GetComponent<Chessman>();
@@ -257,7 +265,7 @@ public class Game : MonoBehaviour
                 currPiece = g.GetComponent<Chessman>();
                 if (currPiece.name.StartsWith(playerOfKing))
                     continue;
-                String pieceName = currPiece.name.Split("_")[1];
+                string pieceName = currPiece.name.Split("_")[1];
                 switch (pieceName)
                 {
                     case "pawn":
