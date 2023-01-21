@@ -10,7 +10,7 @@ using System;
 public class Counter
 {
     public static int roundCounter = 0;
-    public static int winCounterPlayerA = 0; 
+    public static int winCounterPlayerA = 0;
     public static int winCounterPlayerB = 0;
 }
 
@@ -20,9 +20,9 @@ public class Game : MonoBehaviour
 {
     //Reference from Unity IDE
     public GameObject chesspiece;
-    public string playerA; 
+    public string playerA;
     public string playerB;
-    
+
 
     //Matrices needed, positions of each of the GameObjects
     //Also separate arrays for the players in order to easily keep track of them all
@@ -55,7 +55,7 @@ public class Game : MonoBehaviour
 
         timerIsRunningWhite = true;
         timerIsRunningBlack = true;
-        Counter.roundCounter++;        
+        Counter.roundCounter++;
         if (Counter.roundCounter % 2 == 0) //No of game round is even -> 2,4,6 etc. player A=black and player B=white
         {
             playerA = "black";
@@ -63,7 +63,7 @@ public class Game : MonoBehaviour
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " x";
             GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().enabled = true;
-            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n  won "+ Counter.winCounterPlayerA + " x";
+            GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n  won " + Counter.winCounterPlayerA + " x";
         }
         else
         {
@@ -103,8 +103,8 @@ public class Game : MonoBehaviour
             SetPosition(playerWhite[i]);
         }
 
-        
-        
+
+
     }
 
     public GameObject Create(string name, int x, int y)
@@ -115,6 +115,14 @@ public class Game : MonoBehaviour
         cm.SetXBoard(x);
         cm.SetYBoard(y);
         cm.Activate(); //It has everything set up so it can now Activate()
+        return obj;
+    }
+
+    public GameObject CreatePiece(string name)
+    {
+        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
+        Chessman cm = obj.GetComponent<Chessman>();
+        cm.name = name;
         return obj;
     }
 
@@ -142,7 +150,12 @@ public class Game : MonoBehaviour
         }
     }
 
-    public bool PositionOnBoard(int x, int y)
+    public GameObject[,] GetPositions()
+    {
+        return positions;
+    }
+
+    public bool isPositionOnBoard(int x, int y)
     {
         if (x < 0 || y < 0 || x >= positions.GetLength(0) || y >= positions.GetLength(1)) return false;
         return true;
@@ -187,7 +200,9 @@ public class Game : MonoBehaviour
                     GetPosition(1, 7) == null &&
                     GetPosition(2, 7) == null &&
                     GetPosition(3, 7) == null;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -236,6 +251,291 @@ public class Game : MonoBehaviour
         return false;
     }
 
+    public bool isKingInCheck(String playerOfKing, GameObject[,] positions)
+    {
+        Chessman currPiece;
+        bool kingIsInCheck = false;
+        for (int i = 0; i < positions.GetLength(0); i++)
+        {
+            for (int k = 0; k < positions.GetLength(1); k++)
+            {
+                if (positions[i, k] == null)
+                    continue;
+                GameObject g = positions[i, k];
+                currPiece = g.GetComponent<Chessman>();
+                if (currPiece.name.StartsWith(playerOfKing))
+                    continue;
+                string pieceName = currPiece.name.Split("_")[1];
+                switch (pieceName)
+                {
+                    case "pawn":
+                        kingIsInCheck = pawnCheck(playerOfKing, g, positions);
+                        break;
+                    case "rook":
+                        kingIsInCheck = rookCheck(playerOfKing, g, positions);
+                        break;
+                    case "knight":
+                        kingIsInCheck = knightCheck(playerOfKing, g, positions);
+                        break;
+                    case "bishop":
+                        kingIsInCheck = bishopCheck(playerOfKing, g, positions);
+                        break;
+                    case "queen":
+                        kingIsInCheck = queenCheck(playerOfKing, g, positions);
+                        break;
+                    case "pnight":
+                        kingIsInCheck = knightCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        break;
+                    case "knishop":
+                        kingIsInCheck = knightCheck(playerOfKing, g, positions) || bishopCheck(playerOfKing, g, positions);
+                        break;
+                    case "rawn":
+                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        break;
+                    case "knook":
+                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || knightCheck(playerOfKing, g, positions);
+                        break;
+                    case "rishop":
+                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || bishopCheck(playerOfKing, g, positions);
+                        break;
+                    case "kneen":
+                        kingIsInCheck = queenCheck(playerOfKing, g, positions) || knightCheck(playerOfKing, g, positions);
+                        break;
+                    case "pishop":
+                        kingIsInCheck = bishopCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        break;
+                }
+                if (kingIsInCheck)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool pawnCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    {
+        Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
+        int xKing = kingCoords.Item1;
+        int yKing = kingCoords.Item2;
+        Tuple<int, int> pieceCoords = getPieceCoords(g, positions);
+        int xPiece = pieceCoords.Item1;
+        int yPiece = pieceCoords.Item2;
+        if (playerOfKing.Equals("white"))
+        {
+            return (xPiece + 1 == xKing || xPiece - 1 == xKing) && yPiece - 1 == yKing;
+        }
+        else
+        {
+            return (xPiece + 1 == xKing || xPiece - 1 == xKing) && yPiece + 1 == yKing;
+        }
+    }
+
+    private bool rookCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    {
+        Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
+        int xKing = kingCoords.Item1;
+        int yKing = kingCoords.Item2;
+        Tuple<int, int> pieceCoords = getPieceCoords(g, positions);
+        int xPiece = pieceCoords.Item1;
+        int yPiece = pieceCoords.Item2;
+        //check right of piece
+        for (int i = xPiece + 1; i < positions.GetLength(0); i++)
+        {
+            if (i == xKing && yPiece == yKing)
+            {
+                return true;
+            }
+            if (positions[i, yPiece] != null)
+            {
+                break;
+            }
+        }
+        //check left of piece
+        for (int i = xPiece - 1; i >= 0; i--)
+        {
+            if (i == xKing && yPiece == yKing)
+            {
+                return true;
+            }
+            if (positions[i, yPiece] != null)
+            {
+                break;
+            }
+        }
+        //check up vertically
+        for (int i = yPiece + 1; i < positions.GetLength(1); i++)
+        {
+            if (i == yKing && xPiece == xKing)
+            {
+                return true;
+            }
+            if (positions[xPiece, i] != null)
+            {
+                break;
+            }
+        }
+        //check down vertically
+        for (int i = yPiece - 1; i >= 0; i--)
+        {
+            if (i == yKing && xPiece == xKing)
+            {
+                return true;
+            }
+            if (positions[xPiece, i] != null)
+            {
+                break;
+            }
+        }
+        return false;
+    }
+
+    private bool knightCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    {
+        Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
+        int xKing = kingCoords.Item1;
+        int yKing = kingCoords.Item2;
+        Tuple<int, int> pieceCoords = getPieceCoords(g, positions);
+        int xPiece = pieceCoords.Item1;
+        int yPiece = pieceCoords.Item2;
+        if ((xPiece + 1 == xKing || xPiece - 1 == xKing) && yPiece + 2 == yKing)
+        {
+            return true;
+        }
+        else if ((xPiece + 1 == xKing || xPiece - 1 == xKing) && yPiece - 2 == yKing)
+        {
+            return true;
+        }
+        else if ((yPiece + 1 == yKing || yPiece - 1 == yKing) && xPiece + 2 == xKing)
+        {
+            return true;
+        }
+        else if ((yPiece + 1 == yKing || yPiece - 1 == yKing) && xPiece - 2 == xKing)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool bishopCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    {
+        Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
+        int xKing = kingCoords.Item1;
+        int yKing = kingCoords.Item2;
+        Tuple<int, int> pieceCoords = getPieceCoords(g, positions);
+        int xPiece = pieceCoords.Item1;
+        int yPiece = pieceCoords.Item2;
+        int currX = xPiece;
+        int currY = yPiece;
+        //check up left
+        while (currX >= 0 && currY < positions.GetLength(1))
+        {
+            currX--;
+            currY++;
+            if (currX == xKing && currY == yKing)
+            {
+                return true;
+            }
+            else if (isPositionOnBoard(currX, currY) && positions[currX, currY] != null)
+            {
+                break;
+            }
+        }
+        currX = xPiece;
+        currY = yPiece;
+        //check up right
+        while (currX < positions.GetLength(0) && currY < positions.GetLength(1))
+        {
+            currX++;
+            currY++;
+            if (currX == xKing && currY == yKing)
+            {
+                return true;
+            }
+            else if (isPositionOnBoard(currX, currY) && positions[currX, currY] != null)
+            {
+                break;
+            }
+        }
+        currX = xPiece;
+        currY = yPiece;
+        //check down left
+        while (currX >= 0 && currY >= 0)
+        {
+            currX--;
+            currY--;
+            if (currX == xKing && currY == yKing)
+            {
+                return true;
+            }
+            else if (isPositionOnBoard(currX, currY) && positions[currX, currY] != null)
+            {
+                break;
+            }
+        }
+        currX = xPiece;
+        currY = yPiece;
+        //check down right
+        while (currX < positions.GetLength(0) && currY >= 0)
+        {
+            currX++;
+            currY--;
+            if (currX == xKing && currY == yKing)
+            {
+                return true;
+            }
+            else if (isPositionOnBoard(currX, currY) && positions[currX, currY] != null)
+            {
+                break;
+            }
+        }
+        return false;
+    }
+
+    private bool queenCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    {
+        return bishopCheck(playerOfKing, g, positions) || rookCheck(playerOfKing, g, positions);
+    }
+
+    public Tuple<int, int> getKingCoords(String player, GameObject[,] positions)
+    {
+        for (int i = 0; i < positions.GetLength(0); i++)
+        {
+            for (int j = 0; j < positions.GetLength(1); j++)
+            {
+                if (positions[i, j] == null)
+                    continue;
+                Chessman c = positions[i, j].GetComponent<Chessman>();
+                if (c.name.Equals(player + "_king"))
+                {
+                    return Tuple.Create(i, j);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Tuple<int, int> getPieceCoords(GameObject g, GameObject[,] positions)
+    {
+        for (int i = 0; i < positions.GetLength(0); i++)
+        {
+            for (int j = 0; j < positions.GetLength(1); j++)
+            {
+                if (positions[i, j] == null)
+                    continue;
+                if (positions[i, j] == g)
+                {
+                    return Tuple.Create(i, j);
+                }
+            }
+        }
+        return null;
+    }
+
     public Move GetLastMove()
     {
         return moves.DefaultIfEmpty(null).Last();
@@ -263,13 +563,13 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Game"); //Restarts the game by loading the scene over again
         }
 
-        
+
 
         if (timerIsRunningWhite && currentPlayer == "white")
         {
             if (timeRemainingWhite > 0)
             {
-              
+
                 timeRemainingWhite -= Time.deltaTime;
                 DisplayTimeWhite(timeRemainingWhite);
             }
@@ -282,7 +582,7 @@ public class Game : MonoBehaviour
             }
         }
 
-        if (timerIsRunningBlack && currentPlayer == "black" )
+        if (timerIsRunningBlack && currentPlayer == "black")
         {
             if (timeRemainingBlack > 0)
             {
@@ -329,7 +629,7 @@ public class Game : MonoBehaviour
 
         //GameObject.FindGameObjectWithTag("RestartText").GetComponent<Text>().enabled = true;
 
-        if(playerWinner == "white" && playerA == "white") //player A won
+        if (playerWinner == "white" && playerA == "white") //player A won
         {
             Counter.winCounterPlayerA++;
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player A = white \n won " + Counter.winCounterPlayerA + " x";
@@ -337,7 +637,7 @@ public class Game : MonoBehaviour
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
         }
-        else if(playerWinner == "white" && playerB == "white") //player B won
+        else if (playerWinner == "white" && playerB == "white") //player B won
         {
             Counter.winCounterPlayerB++;
             GameObject.FindGameObjectWithTag("PlayerWhite").GetComponent<Text>().text = "Player B = white \n won " + Counter.winCounterPlayerB + " x";
@@ -346,7 +646,7 @@ public class Game : MonoBehaviour
             GameObject.FindGameObjectWithTag("WinnerWhite").GetComponent<Text>().text = "--> WINNER";
 
         }
-        else if(playerWinner == "black" && playerA == "black") //player A won
+        else if (playerWinner == "black" && playerA == "black") //player A won
         {
             Counter.winCounterPlayerA++;
             GameObject.FindGameObjectWithTag("PlayerBlack").GetComponent<Text>().text = "Player A = black \n won " + Counter.winCounterPlayerA + " x";
@@ -362,10 +662,10 @@ public class Game : MonoBehaviour
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().enabled = true;
             GameObject.FindGameObjectWithTag("WinnerBlack").GetComponent<Text>().text = "--> WINNER";
         }
-        
+
 
 
     }
 
-    
+
 }
