@@ -80,9 +80,6 @@ public class MovePlate : MonoBehaviour
                 cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
             }
 
-            if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
-            if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
-
             Destroy(cp);
             OnMouseUpReference(reference);
         }
@@ -312,9 +309,15 @@ public class MovePlate : MonoBehaviour
         game.SetPosition(references);
 
 
-
         //Switch Current Player
         game.NextTurn();
+
+
+        if (!game.playerHasPossibleMoves(game.GetCurrentPlayer(), game.getBoardCopy()))
+        {
+            game.NextTurn();
+            game.Winner(game.GetCurrentPlayer());
+        }
 
         //Destroy the move plates including self
         references.GetComponent<Chessman>().DestroyMovePlates();

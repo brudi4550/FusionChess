@@ -504,9 +504,9 @@ public class Chessman : MonoBehaviour
         copy2[matrixX - 1, matrixY] = game.CreatePiece(player + "_king");
         copy3[xBoard, yBoard] = null;
         copy3[matrixX, matrixY] = game.CreatePiece(player + "_king");
-        if (game.isKingInCheck(player, copy1) ||
-            game.isKingInCheck(player, copy2) ||
-            game.isKingInCheck(player, copy3))
+        if (game.kingIsInCheck(player, copy1) ||
+            game.kingIsInCheck(player, copy2) ||
+            game.kingIsInCheck(player, copy3))
             return;
 
         //Get the board value in order to convert to xy coords
@@ -543,7 +543,7 @@ public class Chessman : MonoBehaviour
         GameObject[,] copy = getBoardCopy();
         copy[xBoard, yBoard] = null;
         copy[matrixX, matrixY] = game.Create(player + "_queen", matrixX, matrixY);
-        if (game.isKingInCheck(player, copy))
+        if (game.kingIsInCheck(player, copy))
             return;
 
         //Get the board value in order to convert to xy coords
@@ -574,7 +574,7 @@ public class Chessman : MonoBehaviour
         GameObject piece = copy[xBoard, yBoard];
         copy[xBoard, yBoard] = null;
         copy[matrixX, matrixY] = piece;
-        if (game.isKingInCheck(player, copy))
+        if (game.kingIsInCheck(player, copy))
             return;
 
         //Get the board value in order to convert to xy coords
@@ -605,7 +605,7 @@ public class Chessman : MonoBehaviour
         GameObject piece = copy[xBoard, yBoard];
         copy[xBoard, yBoard] = null;
         copy[matrixX, matrixY] = piece;
-        if (game.isKingInCheck(player, copy))
+        if (game.kingIsInCheck(player, copy))
             return;
 
         //Get the board value in order to convert to xy coords
@@ -645,7 +645,7 @@ public class Chessman : MonoBehaviour
         Debug.Log(combo);
         copy[xBoard, yBoard] = null;
         copy[matrixX, matrixY] = game.CreatePiece(player + "_" + combo);
-        if (game.isKingInCheck(player, copy))
+        if (game.kingIsInCheck(player, copy))
             return;
 
         //Get the board value in order to convert to xy coords
