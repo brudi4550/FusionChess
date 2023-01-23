@@ -251,7 +251,607 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    public bool isKingInCheck(String playerOfKing, GameObject[,] positions)
+    public GameObject[,] getBoardCopy()
+    {
+        return positions.Clone() as GameObject[,];
+    }
+
+    public bool enemyPieceAt(string player, int x, int y, GameObject[,] positions)
+    {
+        return isPositionOnBoard(x, y) &&
+            positions[x, y] != null &&
+            !positions[x, y].GetComponent<Chessman>().name.StartsWith(player);
+    }
+
+    public bool friendlyPieceAt(string player, int x, int y, GameObject[,] positions)
+    {
+        return isPositionOnBoard(x, y) &&
+            positions[x, y] != null &&
+            positions[x, y].GetComponent<Chessman>().name.StartsWith(player);
+    }
+
+    public bool playerHasPossibleMoves(string player, GameObject[,] positions)
+    {
+        GameObject currPiece;
+        bool someMovePossible = false;
+        for (int i = 0; i < positions.GetLength(0); i++)
+        {
+            for (int j = 0; j < positions.GetLength(1); j++)
+            {
+                //skip iteration if there is no piece on the square
+                if (positions[i, j] == null)
+                {
+                    continue;
+                }
+                currPiece = positions[i, j];
+                //skip iteration if piece doesnt belong to the player
+                if (!currPiece.GetComponent<Chessman>().name.StartsWith(player))
+                {
+                    continue;
+                }
+                string pieceName = currPiece.name.Split("_")[1];
+                switch (pieceName)
+                {
+                    case "pawn":
+                        someMovePossible = pawnMovePossible(player, currPiece, positions);
+                        break;
+                    case "rook":
+                        someMovePossible = rookMovePossible(player, currPiece, positions);
+                        break;
+                    case "knight":
+                        someMovePossible = knightMovePossible(player, currPiece, positions);
+                        break;
+                    case "bishop":
+                        someMovePossible = bishopMovePossible(player, currPiece, positions);
+                        break;
+                    case "queen":
+                        someMovePossible = queenMovePossible(player, currPiece, positions);
+                        break;
+                    case "king":
+                        someMovePossible = kingMovePossible(player, currPiece, positions);
+                        break;
+                    case "pnight":
+                        someMovePossible = pawnMovePossible(player, currPiece, positions) || knightMovePossible(player, currPiece, positions);
+                        break;
+                    case "knishop":
+                        someMovePossible = knightMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        break;
+                    case "rawn":
+                        someMovePossible = pawnMovePossible(player, currPiece, positions) || rookMovePossible(player, currPiece, positions);
+                        break;
+                    case "knook":
+                        someMovePossible = knightMovePossible(player, currPiece, positions) || rookMovePossible(player, currPiece, positions);
+                        break;
+                    case "rishop":
+                        someMovePossible = rookMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        break;
+                    case "kneen":
+                        someMovePossible = knightMovePossible(player, currPiece, positions) || queenMovePossible(player, currPiece, positions);
+                        break;
+                    case "pishop":
+                        someMovePossible = pawnMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        break;
+                }
+                if (someMovePossible)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool pawnMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        GameObject[,] copy = getBoardCopy();
+        Tuple<int, int> coords = getPieceCoords(g, positions);
+        int x = coords.Item1;
+        int y = coords.Item2;
+        if (player.Equals("white"))
+        {
+            //check for first move jump
+            if (y == 1 && copy[x, y + 2] == null)
+            {
+                copy[x, y] = null;
+                copy[x, y + 2] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //check for single move
+            else if (isPositionOnBoard(x, y + 1) && copy[x, y + 1] == null)
+            {
+                copy[x, y] = null;
+                copy[x, y + 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //check for capture to the left
+            else if (enemyPieceAt(player, x - 1, y + 1, copy))
+            {
+                copy[x, y] = null;
+                copy[x - 1, y + 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //check for capture to the right
+            else if (enemyPieceAt(player, x + 1, y + 1, copy))
+            {
+                copy[x, y] = null;
+                copy[x + 1, y + 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //CHECK FOR EN PASSANT MISSING
+        }
+        else
+        {
+            //check for first move jump
+            if (y == 6 && copy[x, y - 2] == null)
+            {
+                copy[x, y] = null;
+                copy[x, y - 2] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+            }
+            //check for single move
+            else if (isPositionOnBoard(x, y - 1) && copy[x, y - 1] == null)
+            {
+                copy[x, y] = null;
+                copy[x, y - 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //check for capture to the left
+            else if (enemyPieceAt(player, x - 1, y - 1, copy))
+            {
+                copy[x, y] = null;
+                copy[x - 1, y - 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //check for capture to the right
+            else if (enemyPieceAt(player, x + 1, y + 1, copy))
+            {
+                copy[x, y] = null;
+                copy[x + 1, y - 1] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            //CHECK FOR EN PASSANT MISSING
+        }
+        return false;
+    }
+
+    public bool rookMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        GameObject[,] copy = getBoardCopy();
+        Tuple<int, int> coords = getPieceCoords(g, positions);
+        int x = coords.Item1;
+        int y = coords.Item2;
+        //check to the right
+        for (int i = x + 1; i < positions.GetLength(0); i++)
+        {
+            if (positions[i, y] == null)
+            {
+                copy[x, y] = null;
+                copy[i, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, i, y, copy))
+            {
+                copy[x, y] = null;
+                copy[i, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+            else if (friendlyPieceAt(player, x, i, copy))
+            {
+                break;
+            }
+        }
+        //check to the left
+        for (int i = x - 1; i >= 0; i--)
+        {
+            if (positions[i, y] == null)
+            {
+                copy[x, y] = null;
+                copy[i, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    Debug.Log("rook move possible to : " + i + "/" + y);
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, i, y, copy))
+            {
+                copy[x, y] = null;
+                copy[i, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    Debug.Log("rook attack move possible to : " + i + "/" + y);
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+            else if (friendlyPieceAt(player, x, i, copy))
+            {
+                break;
+            }
+        }
+        //check up vertically
+        for (int i = y + 1; i < positions.GetLength(1); i++)
+        {
+            if (positions[x, i] == null)
+            {
+                copy[x, y] = null;
+                copy[x, i] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    Debug.Log("rook move possible to : " + x + "/" + i);
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, x, i, copy))
+            {
+                copy[x, y] = null;
+                copy[x, i] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    Debug.Log("rook attack move possible to : " + x + "/" + i);
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+            else if (friendlyPieceAt(player, x, i, copy))
+            {
+                break;
+            }
+        }
+        //check down vertically
+        for (int i = y - 1; i >= 0; i--)
+        {
+            if (positions[x, i] == null)
+            {
+                copy[x, y] = null;
+                copy[x, i] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    Debug.Log("rook move possible to : " + x + "/" + i);
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, x, i, copy))
+            {
+                copy[x, y] = null;
+                copy[x, i] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+            else if (friendlyPieceAt(player, x, i, copy))
+            {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public bool knightMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        GameObject[,] copy = getBoardCopy();
+        Tuple<int, int> coords = getPieceCoords(g, positions);
+        int orgX = coords.Item1;
+        int orgY = coords.Item2;
+        Tuple<int, int>[] positionsToBeChecked = {
+            Tuple.Create(orgX + 1, orgY + 2),
+            Tuple.Create(orgX + 2, orgY + 1),
+            Tuple.Create(orgX + 2, orgY - 1),
+            Tuple.Create(orgX + 1, orgY - 2),
+            Tuple.Create(orgX - 1, orgY - 2),
+            Tuple.Create(orgX - 2, orgY - 1),
+            Tuple.Create(orgX - 2, orgY + 1),
+            Tuple.Create(orgX - 1, orgY + 2),
+        };
+        foreach (Tuple<int, int> t in positionsToBeChecked)
+        {
+            int x = t.Item1;
+            int y = t.Item2;
+            if (isPositionOnBoard(x, y) && (copy[x, y] == null || enemyPieceAt(player, x, y, copy)))
+            {
+                copy[orgX, orgY] = null;
+                copy[x, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool bishopMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        GameObject[,] copy = getBoardCopy();
+        Tuple<int, int> coords = getPieceCoords(g, positions);
+        int x = coords.Item1;
+        int y = coords.Item2;
+        int currX = x;
+        int currY = y;
+        //check up left
+        while (currX >= 0 && currY < positions.GetLength(1))
+        {
+            currX--;
+            currY++;
+            if (isPositionOnBoard(currX, currY) && copy[currX, currY] == null)
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, currX, currY, copy))
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+        }
+        currX = x;
+        currY = y;
+
+        //check up right
+        while (currX < positions.GetLength(0) && currY < positions.GetLength(1))
+        {
+            currX++;
+            currY++;
+            if (isPositionOnBoard(currX, currY) && copy[currX, currY] == null)
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, currX, currY, copy))
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+        }
+        currX = x;
+        currY = y;
+
+        //check down left
+        while (currX >= 0 && currY >= 0)
+        {
+            currX--;
+            currY--;
+            if (isPositionOnBoard(currX, currY) && copy[currX, currY] == null)
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, currX, currY, copy))
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+        }
+        currX = x;
+        currY = y;
+
+        //check down right
+        while (currX < positions.GetLength(0) && currY >= 0)
+        {
+            currX++;
+            currY--;
+            if (isPositionOnBoard(currX, currY) && copy[currX, currY] == null)
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+            else if (enemyPieceAt(player, currX, currY, copy))
+            {
+                copy[x, y] = null;
+                copy[currX, currY] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool queenMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        return bishopMovePossible(player, g, positions) || rookMovePossible(player, g, positions);
+    }
+
+    public bool kingMovePossible(String player, GameObject g, GameObject[,] positions)
+    {
+        GameObject[,] copy = getBoardCopy();
+        Tuple<int, int> coords = getPieceCoords(g, positions);
+        int orgX = coords.Item1;
+        int orgY = coords.Item2;
+        Tuple<int, int>[] positionsToBeChecked = {
+            Tuple.Create(orgX, orgY + 1),
+            Tuple.Create(orgX + 1, orgY + 1),
+            Tuple.Create(orgX + 1, orgY),
+            Tuple.Create(orgX + 1, orgY - 1),
+            Tuple.Create(orgX, orgY - 1),
+            Tuple.Create(orgX - 1, orgY - 1),
+            Tuple.Create(orgX - 1, orgY),
+            Tuple.Create(orgX - 1, orgY + 1),
+        };
+        foreach (Tuple<int, int> t in positionsToBeChecked)
+        {
+            int x = t.Item1;
+            int y = t.Item2;
+            if (isPositionOnBoard(x, y) && (copy[x, y] == null || enemyPieceAt(player, x, y, copy)))
+            {
+                copy[orgX, orgY] = null;
+                copy[x, y] = g;
+                if (!kingIsInCheck(player, copy))
+                {
+                    return true;
+                }
+                else
+                {
+                    copy = getBoardCopy();
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool kingIsInCheck(string playerOfKing, GameObject[,] positions)
     {
         Chessman currPiece;
         bool kingIsInCheck = false;
@@ -269,40 +869,40 @@ public class Game : MonoBehaviour
                 switch (pieceName)
                 {
                     case "pawn":
-                        kingIsInCheck = pawnCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isPawnCheckingKing(playerOfKing, g, positions);
                         break;
                     case "rook":
-                        kingIsInCheck = rookCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isRookCheckingKing(playerOfKing, g, positions);
                         break;
                     case "knight":
-                        kingIsInCheck = knightCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isKnightCheckingKing(playerOfKing, g, positions);
                         break;
                     case "bishop":
-                        kingIsInCheck = bishopCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isBishopCheckingKing(playerOfKing, g, positions);
                         break;
                     case "queen":
-                        kingIsInCheck = queenCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isQueenCheckingKing(playerOfKing, g, positions);
                         break;
                     case "pnight":
-                        kingIsInCheck = knightCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isKnightCheckingKing(playerOfKing, g, positions) || isPawnCheckingKing(playerOfKing, g, positions);
                         break;
                     case "knishop":
-                        kingIsInCheck = knightCheck(playerOfKing, g, positions) || bishopCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isKnightCheckingKing(playerOfKing, g, positions) || isBishopCheckingKing(playerOfKing, g, positions);
                         break;
                     case "rawn":
-                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isRookCheckingKing(playerOfKing, g, positions) || isPawnCheckingKing(playerOfKing, g, positions);
                         break;
                     case "knook":
-                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || knightCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isRookCheckingKing(playerOfKing, g, positions) || isKnightCheckingKing(playerOfKing, g, positions);
                         break;
                     case "rishop":
-                        kingIsInCheck = rookCheck(playerOfKing, g, positions) || bishopCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isRookCheckingKing(playerOfKing, g, positions) || isBishopCheckingKing(playerOfKing, g, positions);
                         break;
                     case "kneen":
-                        kingIsInCheck = queenCheck(playerOfKing, g, positions) || knightCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isQueenCheckingKing(playerOfKing, g, positions) || isKnightCheckingKing(playerOfKing, g, positions);
                         break;
                     case "pishop":
-                        kingIsInCheck = bishopCheck(playerOfKing, g, positions) || pawnCheck(playerOfKing, g, positions);
+                        kingIsInCheck = isBishopCheckingKing(playerOfKing, g, positions) || isPawnCheckingKing(playerOfKing, g, positions);
                         break;
                 }
                 if (kingIsInCheck)
@@ -314,7 +914,7 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private bool pawnCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    private bool isPawnCheckingKing(String playerOfKing, GameObject g, GameObject[,] positions)
     {
         Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
         int xKing = kingCoords.Item1;
@@ -332,7 +932,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private bool rookCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    private bool isRookCheckingKing(String playerOfKing, GameObject g, GameObject[,] positions)
     {
         Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
         int xKing = kingCoords.Item1;
@@ -391,7 +991,7 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private bool knightCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    private bool isKnightCheckingKing(String playerOfKing, GameObject g, GameObject[,] positions)
     {
         Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
         int xKing = kingCoords.Item1;
@@ -421,7 +1021,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private bool bishopCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    private bool isBishopCheckingKing(String playerOfKing, GameObject g, GameObject[,] positions)
     {
         Tuple<int, int> kingCoords = getKingCoords(playerOfKing, positions);
         int xKing = kingCoords.Item1;
@@ -496,9 +1096,9 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private bool queenCheck(String playerOfKing, GameObject g, GameObject[,] positions)
+    private bool isQueenCheckingKing(String playerOfKing, GameObject g, GameObject[,] positions)
     {
-        return bishopCheck(playerOfKing, g, positions) || rookCheck(playerOfKing, g, positions);
+        return isBishopCheckingKing(playerOfKing, g, positions) || isRookCheckingKing(playerOfKing, g, positions);
     }
 
     public Tuple<int, int> getKingCoords(String player, GameObject[,] positions)
