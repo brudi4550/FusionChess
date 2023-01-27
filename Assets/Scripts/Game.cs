@@ -1178,7 +1178,7 @@ public class Game : MonoBehaviour
                 Debug.Log("Time has run out!");
                 timeRemainingWhite = 0;
                 timerIsRunningWhite = false;
-                Winner("PlayerBlack");
+                Winner("black");
             }
         }
 
@@ -1194,7 +1194,7 @@ public class Game : MonoBehaviour
                 Debug.Log("Time has run out!");
                 timeRemainingBlack = 0;
                 timerIsRunningBlack = false;
-                Winner("PlayerWhite");
+                Winner("white");
             }
         }
     }
