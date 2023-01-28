@@ -603,10 +603,22 @@ public class Chessman : MonoBehaviour
         Game game = controller.GetComponent<Game>();
         GameObject[,] copy = getBoardCopy();
         GameObject piece = copy[xBoard, yBoard];
-        copy[xBoard, yBoard] = null;
-        copy[matrixX, matrixY] = piece;
-        if (game.kingIsInCheck(player, copy))
-            return;
+        if (enPassant)
+        {
+            int factor = controller.GetComponent<Game>().GetCurrentPlayer() == "white" ? -1 : 1;
+            copy[matrixX, matrixY + factor] = null;
+            copy[xBoard, yBoard] = null;
+            copy[matrixX, matrixY] = piece;
+            if (game.kingIsInCheck(player, copy))
+                return;
+        }
+        else
+        {
+            copy[xBoard, yBoard] = null;
+            copy[matrixX, matrixY] = piece;
+            if (game.kingIsInCheck(player, copy))
+                return;
+        }
 
         //Get the board value in order to convert to xy coords
         float x = matrixX;

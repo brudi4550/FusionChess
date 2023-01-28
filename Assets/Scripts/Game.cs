@@ -405,7 +405,54 @@ public class Game : MonoBehaviour
                     copy = getBoardCopy();
                 }
             }
-            //CHECK FOR EN PASSANT MISSING
+            //check for en passant
+            else if (y == 4)
+            {
+                GameObject possiblePosition1, possiblePosition2;
+                Move lastMove = GetLastMove();
+                if (isPositionOnBoard(x + 1, y))
+                {
+                    possiblePosition1 = copy[x + 1, y];
+                    if (possiblePosition1 != null && possiblePosition1.GetComponent<Chessman>().name == "black_pawn")
+                    {
+                        if (lastMove.getPiece().name == possiblePosition1.name && lastMove.getToX() == x + 1)
+                        {
+                            copy[x + 1, y] = null;
+                            GameObject capturingPawn = copy[x, y];
+                            copy[x + 1, y + 1] = capturingPawn;
+                            if (!kingIsInCheck(player, copy))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                copy = getBoardCopy();
+                            }
+                        }
+                    }
+                }
+                if (isPositionOnBoard(x - 1, y))
+                {
+                    possiblePosition2 = copy[x - 1, y];
+                    if (possiblePosition2 != null && possiblePosition2.GetComponent<Chessman>().name == "black_pawn")
+                    {
+                        if (lastMove.getPiece().name == possiblePosition2.name && lastMove.getToX() == x - 1)
+                        {
+                            copy[x - 1, y] = null;
+                            GameObject capturingPawn = copy[x, y];
+                            copy[x - 1, y + 1] = capturingPawn;
+                            if (!kingIsInCheck(player, copy))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                copy = getBoardCopy();
+                            }
+                        }
+                    }
+                }
+            }
         }
         else
         {
@@ -461,7 +508,53 @@ public class Game : MonoBehaviour
                     copy = getBoardCopy();
                 }
             }
-            //CHECK FOR EN PASSANT MISSING
+            else if (y == 3)
+            {
+                GameObject possiblePosition1, possiblePosition2;
+                Move lastMove = GetLastMove();
+                if (isPositionOnBoard(x + 1, y))
+                {
+                    possiblePosition1 = copy[x + 1, y];
+                    if (possiblePosition1 != null && possiblePosition1.GetComponent<Chessman>().name == "white_pawn")
+                    {
+                        if (lastMove.getPiece().name == possiblePosition1.name && lastMove.getToX() == x + 1)
+                        {
+                            copy[x + 1, y] = null;
+                            GameObject capturingPawn = copy[x, y];
+                            copy[x + 1, y - 1] = capturingPawn;
+                            if (!kingIsInCheck(player, copy))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                copy = getBoardCopy();
+                            }
+                        }
+                    }
+                }
+                if (isPositionOnBoard(x - 1, y))
+                {
+                    possiblePosition2 = copy[x - 1, y];
+                    if (possiblePosition2 != null && possiblePosition2.GetComponent<Chessman>().name == "black_pawn")
+                    {
+                        if (lastMove.getPiece().name == possiblePosition2.name && lastMove.getToX() == x - 1)
+                        {
+                            copy[x - 1, y] = null;
+                            GameObject capturingPawn = copy[x, y];
+                            copy[x - 1, y - 1] = capturingPawn;
+                            if (!kingIsInCheck(player, copy))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                copy = getBoardCopy();
+                            }
+                        }
+                    }
+                }
+            }
         }
         return false;
     }
@@ -516,7 +609,6 @@ public class Game : MonoBehaviour
                 copy[i, y] = g;
                 if (!kingIsInCheck(player, copy))
                 {
-                    Debug.Log("rook move possible to : " + i + "/" + y);
                     return true;
                 }
                 else
@@ -530,7 +622,6 @@ public class Game : MonoBehaviour
                 copy[i, y] = g;
                 if (!kingIsInCheck(player, copy))
                 {
-                    Debug.Log("rook attack move possible to : " + i + "/" + y);
                     return true;
                 }
                 else
@@ -553,7 +644,6 @@ public class Game : MonoBehaviour
                 copy[x, i] = g;
                 if (!kingIsInCheck(player, copy))
                 {
-                    Debug.Log("rook move possible to : " + x + "/" + i);
                     return true;
                 }
                 else
@@ -567,7 +657,6 @@ public class Game : MonoBehaviour
                 copy[x, i] = g;
                 if (!kingIsInCheck(player, copy))
                 {
-                    Debug.Log("rook attack move possible to : " + x + "/" + i);
                     return true;
                 }
                 else
@@ -590,7 +679,6 @@ public class Game : MonoBehaviour
                 copy[x, i] = g;
                 if (!kingIsInCheck(player, copy))
                 {
-                    Debug.Log("rook move possible to : " + x + "/" + i);
                     return true;
                 }
                 else

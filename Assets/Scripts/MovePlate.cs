@@ -242,6 +242,7 @@ public class MovePlate : MonoBehaviour
         {
             int factor = game.GetCurrentPlayer().Equals("white") ? -1 : 1;
             game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard() + factor);
+            game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
         }
         else if (shortCastle)
         {
@@ -307,6 +308,7 @@ public class MovePlate : MonoBehaviour
 
         //Update the matrix
         game.SetPosition(references);
+        Debug.Log("Position 4/4 is:" + game.GetPosition(4,4));
 
 
         //Switch Current Player
