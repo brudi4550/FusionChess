@@ -35,9 +35,7 @@ public class MovePlate : MonoBehaviour
 
         if (merge)
         {
-            Debug.Log("merge MovePlate");
 
-            Debug.Log(GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name);
             //Set to green
             if (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" ||
@@ -57,7 +55,6 @@ public class MovePlate : MonoBehaviour
             {
                 gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
             }
-            Debug.Log(gameObject.GetComponent<SpriteRenderer>());
 
         }
     }
@@ -92,8 +89,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_pawn") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_pawn"))
             {
                 Destroy(cp);
-                //Debug.Log(cp.name);
-                //Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_pnight", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -111,8 +106,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_bishop"))
             {
                 Destroy(cp);
-                Debug.Log(cp.name);
-                Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_knishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -131,8 +124,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_pawn" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_pawn" && cp.name == "white_rook"))
             {
                 Destroy(cp);
-                //Debug.Log(cp.name);
-                //Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_rawn", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -151,8 +142,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_knight" && reference.GetComponent<Chessman>().name == "white_rook") | (reference.GetComponent<Chessman>().name == "white_knight" && cp.name == "white_rook"))
             {
                 Destroy(cp);
-                Debug.Log(cp.name);
-                Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_knook", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -170,8 +159,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_rook" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_rook" && cp.name == "white_bishop"))
             {
                 Destroy(cp);
-                Debug.Log(cp.name);
-                Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_rishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -189,8 +176,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight") | (reference.GetComponent<Chessman>().name == "white_queen" && cp.name == "white_knight"))
             {
                 Destroy(cp);
-                Debug.Log(cp.name);
-                Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_kneen", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -209,8 +194,6 @@ public class MovePlate : MonoBehaviour
             if ((cp.name == "white_pawn" && reference.GetComponent<Chessman>().name == "white_bishop") | (reference.GetComponent<Chessman>().name == "white_pawn" && cp.name == "white_bishop"))
             {
                 Destroy(cp);
-                Debug.Log(cp.name);
-                Debug.Log(reference.GetComponent<Chessman>().name);
                 GameObject newReference = controller.GetComponent<Game>().Create("white_pishop", reference.GetComponent<Chessman>().GetXBoard(), reference.GetComponent<Chessman>().GetYBoard());
                 Destroy(reference);
 
@@ -242,7 +225,6 @@ public class MovePlate : MonoBehaviour
         {
             int factor = game.GetCurrentPlayer().Equals("white") ? -1 : 1;
             game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard() + factor);
-            game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
         }
         else if (shortCastle)
         {
@@ -292,10 +274,8 @@ public class MovePlate : MonoBehaviour
             }
             piece = references.GetComponent<Chessman>();
         }
-        else
-        {
-            game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
-        }
+
+        game.SetPositionEmpty(piece.GetXBoard(), piece.GetYBoard());
 
         //Add move to movelist, necessary for checking for en passant
         Move m = new Move(references, piece.GetXBoard(), piece.GetYBoard(), matrixX, matrixY);
@@ -308,7 +288,6 @@ public class MovePlate : MonoBehaviour
 
         //Update the matrix
         game.SetPosition(references);
-        Debug.Log("Position 4/4 is:" + game.GetPosition(4,4));
 
 
         //Switch Current Player

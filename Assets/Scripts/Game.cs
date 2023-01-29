@@ -294,42 +294,55 @@ public class Game : MonoBehaviour
                 {
                     case "pawn":
                         someMovePossible = pawnMovePossible(player, currPiece, positions);
+                        Debug.Log("Pawn move possible");
                         break;
                     case "rook":
                         someMovePossible = rookMovePossible(player, currPiece, positions);
+                        Debug.Log("rook move possible");
                         break;
                     case "knight":
                         someMovePossible = knightMovePossible(player, currPiece, positions);
+                        Debug.Log("knight move possible");
                         break;
                     case "bishop":
                         someMovePossible = bishopMovePossible(player, currPiece, positions);
+                        Debug.Log("bishop move possible");
                         break;
                     case "queen":
                         someMovePossible = queenMovePossible(player, currPiece, positions);
+                        Debug.Log("queen move possible");
                         break;
                     case "king":
                         someMovePossible = kingMovePossible(player, currPiece, positions);
+                        Debug.Log("king move possible");
                         break;
                     case "pnight":
                         someMovePossible = pawnMovePossible(player, currPiece, positions) || knightMovePossible(player, currPiece, positions);
+                        Debug.Log("pnight move possible");
                         break;
                     case "knishop":
                         someMovePossible = knightMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        Debug.Log("knishop move possible");
                         break;
                     case "rawn":
                         someMovePossible = pawnMovePossible(player, currPiece, positions) || rookMovePossible(player, currPiece, positions);
+                        Debug.Log("rawn move possible");
                         break;
                     case "knook":
                         someMovePossible = knightMovePossible(player, currPiece, positions) || rookMovePossible(player, currPiece, positions);
+                        Debug.Log("knook move possible");
                         break;
                     case "rishop":
                         someMovePossible = rookMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        Debug.Log("rishop move possible");
                         break;
                     case "kneen":
                         someMovePossible = knightMovePossible(player, currPiece, positions) || queenMovePossible(player, currPiece, positions);
+                        Debug.Log("kneen move possible");
                         break;
                     case "pishop":
                         someMovePossible = pawnMovePossible(player, currPiece, positions) || bishopMovePossible(player, currPiece, positions);
+                        Debug.Log("pishop move possible");
                         break;
                 }
                 if (someMovePossible)
@@ -1263,7 +1276,6 @@ public class Game : MonoBehaviour
             }
             else
             {
-                Debug.Log("Time has run out!");
                 timeRemainingWhite = 0;
                 timerIsRunningWhite = false;
                 Winner("black");
@@ -1279,7 +1291,6 @@ public class Game : MonoBehaviour
             }
             else
             {
-                Debug.Log("Time has run out!");
                 timeRemainingBlack = 0;
                 timerIsRunningBlack = false;
                 Winner("white");

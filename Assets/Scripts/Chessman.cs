@@ -280,14 +280,6 @@ public class Chessman : MonoBehaviour
             this.name != "white_king" && this.name != "black_king" &&
             !sc.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
         {
-            Debug.Log("LineMovePlate");
-            Debug.Log(this.name);
-            Debug.Log("Name");
-            Debug.Log("sc.GetPosition(x, y).GetComponent<Chessman>().player");
-            Debug.Log(sc.GetPosition(x, y).GetComponent<Chessman>().player);
-            Debug.Log("Player");
-            Debug.Log(player);
-
             MovePlateMergeSpawn(x, y);
         }
     }
@@ -367,9 +359,6 @@ public class Chessman : MonoBehaviour
                 this.name != "white_pishop" && this.name != "black_pishop" &&
                 !sc.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
             {
-                Debug.Log("PointMovePLate");
-                Debug.Log(this.name);
-                Debug.Log("Name");
                 MovePlateMergeSpawn(x, y);
 
             }
@@ -433,9 +422,6 @@ public class Chessman : MonoBehaviour
                 this.name != "white_king" && this.name != "black_king" &&
                 !game.GetPosition(x, y).GetComponent<Chessman>().name.EndsWith("king"))
             {
-                Debug.Log("PawnMovePlate");
-                Debug.Log(this.name);
-                Debug.Log("Name");
 
                 if (this.name != "white_rishop" && this.name != "black_rishop")
                 {
@@ -652,9 +638,6 @@ public class Chessman : MonoBehaviour
         string pieceName1 = piece.GetComponent<Chessman>().name.Split("_")[1];
         string pieceName2 = copy[matrixX, matrixY].GetComponent<Chessman>().name.Split("_")[1];
         string combo = getCombination(pieceName1, pieceName2);
-        Debug.Log(pieceName1);
-        Debug.Log(pieceName2);
-        Debug.Log(combo);
         copy[xBoard, yBoard] = null;
         copy[matrixX, matrixY] = game.CreatePiece(player + "_" + combo);
         if (game.kingIsInCheck(player, copy))
@@ -678,9 +661,6 @@ public class Chessman : MonoBehaviour
         MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.merge = true;
         mpScript.SetReference(gameObject);
-        Debug.Log("MovePlateMergeSpawn");
-        Debug.Log(mpScript.GetReference());
-        Debug.Log(controller.GetComponent<Game>().GetPosition(matrixX, matrixY));
 
         mpScript.SetCoords(matrixX, matrixY);
     }
