@@ -37,14 +37,14 @@ public class MovePlate : MonoBehaviour
         {
 
             //Set to green
-            if (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" ||
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" ||
+            if (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_pawn" && reference.GetComponent<Chessman>().name != "white_pawn" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_knight" && reference.GetComponent<Chessman>().name != "white_knight" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_bishop" ||
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_rook" ||
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_knight" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_rook" && reference.GetComponent<Chessman>().name != "white_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_knight" && reference.GetComponent<Chessman>().name != "black_knight" ||
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_bishop" ||
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_rook" ||
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_pawn" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_rook" && reference.GetComponent<Chessman>().name != "black_rook" ||
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_pawn" && reference.GetComponent<Chessman>().name != "black_pawn" ||
                 (GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "black_queen" && reference.GetComponent<Chessman>().name == "black_knight" ||
                  GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().GetPosition(matrixX, matrixY).name == "white_queen" && reference.GetComponent<Chessman>().name == "white_knight"))
             {
